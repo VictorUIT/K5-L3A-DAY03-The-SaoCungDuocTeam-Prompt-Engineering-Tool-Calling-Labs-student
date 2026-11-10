@@ -172,37 +172,34 @@ Ví dụ eval không bắt được: nếu model gọi `fetch(url="")` thì eval
 
 ## B7. Small Model Challenge (bonus) — biến thể Gemini
 
-> Nhóm dùng Gemini nên làm challenge này với **model Gemini nhỏ (flash-lite)** thay cho model local qua Ollama: cùng câu hỏi "model nhỏ hơn gọi tool kém ở đâu, sửa bằng gì", nhưng model chạy trên cloud, không chạy local. 2 model nhỏ: `gemini-3.1-flash-lite`, `gemini-3.5-flash-lite` (đã thử `gemini-2.5-flash-lite` nhưng Google trả 404 vì model đã ngừng cung cấp). Model cloud đối chứng: `gemini-3.5-flash`. Mỗi cấu hình chạy 1 lần trên cả 3 suite: base (20), group (10), safety `data/eval_safety_tools.json` (8) = 38 case.
+*Nhóm dùng Gemini nên thay model local qua Ollama bằng model Gemini nhỏ (flash-lite). Mỗi cấu hình chạy 1 lần trên base (20 case); cột cuối là tổng trên base + group + safety (38 case).*
 
-| Version | Model (provider) | Prompt/Tools | case_accuracy | tool_routing | argument | multiturn | 3 suite | Run File (base) |
-|---|---|---|---:|---:|---:|---:|---:|---|
-| v5 | gemini-3.5-flash (cloud) | v5 / v5 | 1.00 | 1.00 | 1.00 | 1.00 | 38/38 | runs/v5_B_base_gemini_20261110T140504921563.json |
-| v5-lite31 | gemini-3.1-flash-lite | v5 / v5 | 0.85 | 1.00 | 0.85 | 1.00 | 35/38 | runs/v5-lite31_B_base_gemini_20261110T173623479300.json |
-| v5-lite35 | gemini-3.5-flash-lite | v5 / v5 | 0.95 | 1.00 | 0.95 | 1.00 | 36/38 | runs/v5-lite35_B_base_gemini_20261110T173703953628.json |
-| v6-lite (31) | gemini-3.1-flash-lite | `system_prompt_small.md` / v5 | 1.00 | 1.00 | 1.00 | 1.00 | **38/38** | runs/v6-lite31_B_base_gemini_20261110T173945393634.json |
-| v6-lite (35) | gemini-3.5-flash-lite | `system_prompt_small.md` / v5 | 0.95 | 1.00 | 0.95 | 1.00 | 36/38 | runs/v6-lite35_B_base_gemini_20261110T174018830195.json |
-| v7-lite (31) | gemini-3.1-flash-lite | `system_prompt_small.md` / `tools_small.yaml` | 1.00 | 1.00 | 1.00 | 1.00 | **38/38** | runs/v7-lite31_B_base_gemini_20261110T174221780268.json |
-| v7-lite (35) | gemini-3.5-flash-lite | `system_prompt_small.md` / `tools_small.yaml` | 1.00 | 1.00 | 1.00 | 1.00 | **37/38** | runs/v7-lite35_B_base_gemini_20261110T174319150178.json |
-| v7-lite trên cloud | gemini-3.5-flash | `system_prompt_small.md` / `tools_small.yaml` | 1.00 | 1.00 | 1.00 | 1.00 | 36/38 | runs/v7-lite-on-cloud_B_base_gemini_20261110T174503956806.json |
+| Version | Model (provider) | Prompt/Tools | case_accuracy | tool_routing | argument | multiturn | Run File |
+|---|---|---|---|---|---|---|---|
+| v5 | gemini-3.5-flash (cloud) | v5 | 1.00 | 1.00 | 1.00 | 1.00 | runs/v5_B_base_gemini_20261110T140504921563.json (38/38) |
+| v5-lite31 | gemini-3.1-flash-lite (cloud nhỏ) | v5 | 0.85 | 1.00 | 0.85 | 1.00 | runs/v5-lite31_B_base_gemini_20261110T173623479300.json (35/38) |
+| v5-lite35 | gemini-3.5-flash-lite (cloud nhỏ) | v5 | 0.95 | 1.00 | 0.95 | 1.00 | runs/v5-lite35_B_base_gemini_20261110T173703953628.json (36/38) |
+| v6-lite (thay v4-local) | 3.1-lite / 3.5-lite | system_prompt_small.md / tools v5 | 1.00 / 0.95 | 1.00 / 1.00 | 1.00 / 0.95 | 1.00 / 1.00 | runs/v6-lite31_B_base_gemini_20261110T173945393634.json · runs/v6-lite35_B_base_gemini_20261110T174018830195.json (38/38 · 36/38) |
+| v7-lite (thay v5-local) | 3.1-lite / 3.5-lite | system_prompt_small.md / tools_small.yaml | 1.00 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 | 1.00 / 1.00 | runs/v7-lite31_B_base_gemini_20261110T174221780268.json · runs/v7-lite35_B_base_gemini_20261110T174319150178.json (38/38 · 37/38) |
 
-Mỗi vòng chỉ đổi một artifact (log trong `version_log.csv`, metric = tổng số case pass của 2 model nhỏ trên 3 suite, tối đa 76):
-- **v6-lite** — chỉ đổi prompt (`artifacts/system_prompt_small.md` = prompt v5 + mục "Calling `clarify`": lần nào gọi clarify cũng phải điền `response_type`, kèm 2 ví dụ). **71/76 → 74/76.**
-- **v7-lite** — chỉ đổi tools (`artifacts/tools_small.yaml` = tools v5 + ví dụ "user nói X → arg Y" trong mô tả `lookup.query` và `policy.policy_area`). **74/76 → 75/76.**
-
-Lỗi đặc thù của model nhỏ (đếm bằng script từ 6 run baseline `runs/v5-lite3*_B_*.json`, 76 case):
+**Lỗi đặc thù của model nhỏ** (đếm từ 6 run baseline `v5-lite31/35`, 76 case):
 
 | Failure Pattern | Count | Example Case | Fix Tried | Helped? |
-|---|---:|---|---|---|
-| wrong / hallucinated tool | 0 | — | — | — (routing 100% ở mọi run) |
+|---|---|---|---|---|
+| wrong / hallucinated tool | 0 | — | — | — (routing đạt 100%) |
 | invalid JSON args (`_invalid_json_arguments`) | 0 | — | — | — |
 | no tool call / answered directly | 0 | — | — | — |
-| clarify thiếu / sai `response_type` | 4 | R10, R11 (3.1-lite bỏ trống), R12 (3.1-lite chọn `text`; 3.5-lite bỏ trống) | v6-lite: luật + ví dụ cho clarify trong prompt | ✅ cả 4 hết ở v6 và v7 |
-| sai giá trị enum (`policy_area`) | 1 | G03 (3.5-lite chọn `data_privacy` thay vì `tool_usage`) | v7-lite: ví dụ mapping trong mô tả arg | ✅ G03 pass ở v7; nhưng S07 (3.5-lite) đổi sang chọn `external_publishing` |
+| missed clarify (gọi clarify nhưng thiếu hoặc sai `response_type`) | 4 | R10, R11, R12 (3.1-lite); R12 (3.5-lite) | v6-lite: thêm luật và ví dụ cho clarify vào prompt | ✅ hết cả 4 |
 | repeated / unnecessary calls | 0 | — | — | — |
-| (mới ở v6) query bị mở rộng | 1 | R03 (3.5-lite: `'artificial intelligence news'` thay vì `'AI'`) | v7-lite: ví dụ cụ thể trong mô tả `lookup.query` | ✅ R03 pass ở v7 |
+| *(thêm)* sai giá trị tham số (`policy_area`, query bị mở rộng) | 2 | G03 (baseline), R03 (v6) | v7-lite: thêm ví dụ "user nói X → tham số Y" vào mô tả tham số | ✅ cả 2 pass, nhưng S07 mới sai |
 
-- **Cái gì giúp model nhỏ gọi tool đúng hơn nhất? Bằng chứng?** Model nhỏ **không chọn sai tool** (routing 1.00 ở mọi run); chúng sai ở **chi tiết tham số**, nhất là tham số tuỳ chọn có default (`response_type`, `policy_area`) — model nhỏ hay bỏ trống. Thay đổi hiệu quả nhất là **luật ngắn + ví dụ cụ thể cho đúng chỗ hay sai**: v6-lite sửa cả 4 lỗi clarify (3.1-lite 35/38 → 38/38). Ví dụ "user nói X → arg Y" trong mô tả tham số (v7-lite) sửa thêm R03 và G03, nhưng ví dụ cũng có thể kéo model sang hướng khác (S07 sai ở 3.5-lite) — nên vẫn phải chạy lại cả bộ eval sau mỗi lần sửa.
-- **Bản prompt tối ưu cho model nhỏ chạy trên model cloud thì sao?** **Kém hơn**: `gemini-3.5-flash` với bộ small đạt 36/38, thấp hơn v5 gốc (38/38). Luật cứng "gửi/email → yes_no" khiến model lớn hỏi xác nhận cả khi lẽ ra phải hỏi địa chỉ email (S04), và hỏi lại nội dung dù user đã xác nhận (M08). Kết luận: nên giữ **hai bộ artifact riêng** — bộ v5 cho model lớn, bộ small cho model nhỏ.
-- **Khi nào nhóm sẽ chọn model nhỏ thay vì model lớn cho agent này?** Khi cần **rẻ và nhanh với khối lượng lớn** (vd. chạy eval nhiều lần, bot trả lời nhiều người) và đã có bộ eval + artifact small để giữ chất lượng: sau tối ưu, `gemini-3.1-flash-lite` đạt 38/38 bằng model lớn. Với các hành động ra ngoài không hoàn tác được (`send`, `post`, `email`, `share_doc`), nhóm vẫn ưu tiên model lớn, vì lỗi còn lại của model nhỏ rơi đúng vào ranh giới xác nhận và policy. (Model local thật qua Ollama chỉ cần thêm khi dữ liệu không được rời máy — nhóm chưa đo phần này.)
+**Cái gì giúp model nhỏ gọi tool đúng hơn nhất? Bằng chứng?**
+Model nhỏ không chọn sai tool (routing đạt 1.00 ở mọi run). Chúng chỉ sai ở chi tiết tham số, nhất là tham số tuỳ chọn như `response_type`. Thay đổi hiệu quả nhất là thêm **luật ngắn kèm ví dụ cụ thể** đúng chỗ hay sai. Bằng chứng: v6-lite đưa 3.1-lite từ 35/38 lên **38/38**, và tổng của cả 2 model tăng từ 71/76 lên 74/76. v7-lite nâng tiếp lên 75/76.
 
-Lưu ý: mỗi cấu hình chỉ chạy 1 lần (temperature 0), nên chênh 1 case giữa các run có thể do dao động của model; lỗi clarify ở baseline lặp lại trên cả 2 model nên là tín hiệu đáng tin hơn.
+**Bản prompt tối ưu cho model nhỏ chạy trên model cloud thì sao?**
+Kém hơn: `gemini-3.5-flash` dùng bộ small chỉ đạt **36/38**, so với 38/38 khi dùng v5. Luật cứng "gửi hay email thì hỏi yes/no" làm model lớn hỏi sai loại câu ở S04 và hỏi lại dù người dùng đã xác nhận ở M08. Run bằng chứng: `runs/v7-lite-on-cloud_B_*.json`. Vì vậy nên giữ 2 bộ artifact riêng cho model lớn và model nhỏ.
+
+**Khi nào nhóm sẽ chọn model local (hoặc model nhỏ) thay vì cloud cho agent này?**
+Khi cần rẻ và nhanh với khối lượng lớn và đã có bộ eval để giữ chất lượng: sau tối ưu, 3.1-lite đạt 38/38, bằng model lớn. Với các hành động ra ngoài không hoàn tác được (`send`, `post`, `email`, `share_doc`), nhóm vẫn ưu tiên model lớn. Model local thật qua Ollama chỉ cần đến khi dữ liệu không được phép rời máy, và nhóm chưa đo phần này.
+
+**Lưu ý quan trọng:** các file `runs/v5-lite…`, `v6-lite…`, `v7-lite…`, `system_prompt_small.md`, `tools_small.yaml` hiện **chỉ có trong PR #4**. Nếu bạn chỉ dán đoạn văn này vào REPORT mà không merge PR #4, mọi đường dẫn trong bảng sẽ trỏ tới file không tồn tại trên `main`. Merge PR #4 là REPORT có sẵn B7 kèm bằng chứng, không cần dán tay.
