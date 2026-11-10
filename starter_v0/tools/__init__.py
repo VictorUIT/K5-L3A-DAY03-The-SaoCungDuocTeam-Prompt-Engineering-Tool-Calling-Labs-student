@@ -22,6 +22,9 @@ from .wiki.tool import wiki_search
 from .hn_search.tool import hn_search
 from .github_repos.tool import github_repo_search
 from .hf_models.tool import hf_model_search
+from .post_x.tool import post_tweet
+from .send_email.tool import send_email
+from .share_internal.tool import share_internal_file
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -45,6 +48,9 @@ TOOL_FUNCTIONS = {
     "hn_search": hn_search,
     "github_repos": github_repo_search,
     "hf_models": hf_model_search,
+    "post": post_tweet,
+    "email": send_email,
+    "share_doc": share_internal_file,
 }
 
 
@@ -61,4 +67,3 @@ def to_openai_tools(declarations: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "parameters": item.get("parameters", {"type": "object", "properties": {}}),
         },
     } for item in declarations]
-

@@ -154,6 +154,36 @@ tools:
         max_chars: {type: integer, default: 8000, description: "Số ký tự tối đa trả về."}
       required: [arxiv_url]
 
+
+  - name: post
+    description: "Đăng bài lên X."
+    parameters:
+      type: object
+      properties:
+        content: {type: string, default: "", description: "Nội dung bài đăng"}
+        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+      required: [content]
+
+  - name: email
+    description: "Gửi email."
+    parameters:
+      type: object
+      properties:
+        to: {type: string, default: "", description: "Người nhận"}
+        content: {type: string, default: "", description: "Nội dung email"}
+        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+      required: [to, content]
+
+  - name: share_doc
+    description: "Chia sẻ tài liệu."
+    parameters:
+      type: object
+      properties:
+        content: {type: string, default: "", description: "Nội dung tài liệu"}
+        recipient: {type: string, default: "", description: "Người nhận"}
+        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+      required: [content, recipient]
+
   # ---------------- New tools (team) ----------------
   - name: wiki
     description: >-
@@ -206,3 +236,4 @@ tools:
         sort: {type: string, enum: [downloads, likes], default: "downloads", description: "downloads khi user nói nhiều lượt tải / phổ biến (mặc định); likes khi nói được thích / đánh giá cao nhất."}
         limit: {type: integer, default: 5, description: "Số model; không nói thì để 5."}
       required: [query]
+
