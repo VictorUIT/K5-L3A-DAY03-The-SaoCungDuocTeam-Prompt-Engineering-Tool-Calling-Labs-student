@@ -1,4 +1,4 @@
-# Tool Folder Contract
+›# Tool Folder Contract
 
 Each tool lives in its own folder:
 

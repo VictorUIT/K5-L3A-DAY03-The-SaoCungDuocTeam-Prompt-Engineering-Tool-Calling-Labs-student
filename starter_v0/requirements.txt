@@ -8,3 +8,5 @@ PyYAML>=6.0
 pypdf>=4.0.0
 # Tool unit tests:
 pytest>=8.0.0
+# UI (Streamlit demo):
+streamlit>=1.30

@@ -10,6 +10,10 @@ from tools._shared import TIMEOUT, domain, err
 
 def read_url(url: str = "") -> dict[str, Any]:
     try:
+        # Bug fix (B5): an empty/non-http url used to be sent to Firecrawl and burn a credit.
+        url = (url or "").strip()
+        if not url.startswith(("http://", "https://")):
+            raise ValueError(f"url must start with http:// or https://, got {url!r}")
         key = os.getenv("FIRECRAWL_API_KEY")
         if not key:
             raise RuntimeError("Missing FIRECRAWL_API_KEY env var")
