@@ -5,7 +5,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from env_loader import load_lab_env
 from providers import make_provider
@@ -84,12 +84,26 @@ def run_model_tool_loop(
     tools: list[dict[str, Any]],
     model: str | None,
     max_tool_rounds: int,
+    on_event: Callable[[str, dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
+    """Run the model <-> tool loop.
+
+    on_event (optional) receives progress events so a UI can show live status:
+    ("round_start", {"round"}), ("tool_start", {"name", "args"}), ("tool_end", event).
+    """
+    def emit(kind: str, payload: dict[str, Any]) -> None:
+        if on_event is not None:
+            try:
+                on_event(kind, payload)
+            except Exception:
+                pass  # a broken UI callback must never break the agent loop
+
     working_messages = list(messages)
     rounds: list[dict[str, Any]] = []
     all_tool_events: list[dict[str, Any]] = []
 
     for round_index in range(1, max_tool_rounds + 1):
+        emit("round_start", {"round": round_index})
         response = provider.complete(working_messages, tools, model=model, temperature=0.0)
         calls = response.tool_calls
         round_record: dict[str, Any] = {
@@ -113,7 +127,9 @@ def run_model_tool_loop(
 
         for call in calls:
             print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
+            emit("tool_start", {"name": call.name, "args": call.args})
             event = execute_tool_call(call)
+            emit("tool_end", event)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
 
@@ -137,7 +153,7 @@ def run_model_tool_loop(
 
     return {
         "status": "max_tool_rounds",
-        "assistant_text": f"Stopped after {max_tool_rounds} tool rounds. Inspect the transcript for details.",
+        "assistant_text": f"Agent đã dừng sau {max_tool_rounds} vòng gọi tool mà chưa ra câu trả lời. Hãy hỏi cụ thể hơn hoặc xem transcript.",
         "rounds": rounds,
         "tool_events": all_tool_events,
     }
