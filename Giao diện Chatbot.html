@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chatbot</title>
+<style>
+:root{--bg:#0b111b;--side:#0f1623;--panel:#121b2b;--line:#1f2b40;--text:#e6ebf4;--mute:#8793a8;--acc:#2f6bff;--accsoft:rgba(47,107,255,.14);--user:#1a2438;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f3f5f9;--side:#fff;--panel:#fff;--line:#dde3ee;--text:#18202e;--mute:#667388;--accsoft:rgba(47,107,255,.1);--user:#e8edf7;color-scheme:light}}
+:root[data-theme="dark"]{--bg:#0b111b;--side:#0f1623;--panel:#121b2b;--line:#1f2b40;--text:#e6ebf4;--mute:#8793a8;--user:#1a2438}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.55 "Inter","Segoe UI",system-ui,sans-serif}
+.app{display:flex;height:100%}
+aside{width:272px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;flex-shrink:0}
+aside h2{font-size:13px;font-weight:600;color:var(--mute);margin:4px 8px 10px}
+#list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;border:0;background:none;color:var(--text);font:inherit;text-align:left;cursor:pointer;width:100%}
+.item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item small{color:var(--mute);font-size:12px}
+.item:hover{background:var(--accsoft)}
+.item.on{background:var(--accsoft);box-shadow:inset 0 0 0 1px var(--line)}
+.item .del{opacity:0;color:var(--mute);padding:0 4px;border-radius:4px}
+.item:hover .del,.item:focus-within .del{opacity:1}
+.nav{border-top:1px solid var(--line);padding-top:10px;margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;gap:10px;align-items:center;background:none;border:0;color:var(--text);font:inherit;padding:9px 10px;border-radius:9px;cursor:pointer}
+.nav button:hover{background:var(--accsoft)}
+.new{margin-top:10px;background:var(--acc);color:#fff;border:0;border-radius:10px;padding:12px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.new:hover{filter:brightness(1.1)}
+main{flex:1;display:flex;flex-direction:column;min-width:0;padding:16px 20px}
+.top{display:none;align-items:center;gap:10px;margin-bottom:10px}
+.top button{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer;font:inherit}
+#msgs{flex:1;overflow-y:auto;border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:18px}
+.row{display:flex;gap:12px;max-width:760px;width:100%;margin:0 auto}
+.av{width:34px;height:34px;border-radius:50%;background:var(--user);display:grid;place-items:center;flex-shrink:0;font-size:13px;color:var(--mute)}
+.row.bot .av{background:var(--acc);color:#fff}
+.who{font-size:13px;color:var(--mute);margin-bottom:2px}
+.body{white-space:pre-wrap;word-break:break-word}
+.row.user .body{background:var(--user);padding:10px 14px;border-radius:12px;display:inline-block}
+.empty{margin:auto;text-align:center;color:var(--mute);max-width:360px}
+.empty b{display:block;color:var(--text);font-size:19px;margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.chips button{background:none;border:1px solid var(--line);color:var(--text);border-radius:99px;padding:6px 12px;cursor:pointer;font:inherit;font-size:13px}
+.chips button:hover{border-color:var(--acc)}
+.dots i{display:inline-block;width:6px;height:6px;margin-right:4px;border-radius:50%;background:var(--mute);animation:b 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{50%{opacity:.2}}
+form{display:flex;gap:10px;margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px 8px 8px 16px}
+form:focus-within{border-color:var(--acc)}
+#in{flex:1;background:none;border:0;outline:0;color:var(--text);font:inherit;resize:none;max-height:140px;padding:7px 0}
+#send{background:var(--acc);color:#fff;border:0;border-radius:10px;width:42px;cursor:pointer;font-size:16px}
+#send:disabled{opacity:.4;cursor:default}
+button:focus-visible,#in:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+@media(max-width:760px){
+aside{position:fixed;inset:0 auto 0 0;z-index:5;transform:translateX(-100%);transition:transform .2s;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+aside.open{transform:none}
+.top{display:flex}main{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside id="side">
+<h2>Lịch sử chat</h2>
+<div id="list"></div>
+<div class="nav">
+<button type="button" id="dash">▦ Bảng điều khiển</button>
+<button type="button" id="set">⚙ Cài đặt</button>
+</div>
+<button class="new" id="new" type="button">Cuộc trò chuyện mới</button>
+</aside>
+<main>
+<div class="top"><button type="button" id="menu" aria-label="Mở lịch sử chat">☰</button><strong id="ttl">Chatbot</strong></div>
+<div id="msgs" aria-live="polite"></div>
+<form id="f">
+<textarea id="in" rows="1" placeholder="Nhập tin nhắn…" aria-label="Tin nhắn"></textarea>
+<button id="send" type="submit" aria-label="Gửi">➤</button>
+</form>
+</main>
+</div>
+<script>
+let chats=[],cur=null,nid=1,busy=false;
+let activeSessionId=crypto.randomUUID();
+const $=id=>document.getElementById(id);
+const list=$("list"),msgs=$("msgs"),inp=$("in"),side=$("side");
+const get=()=>chats.find(c=>c.id===cur);
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function renderList(){
+list.innerHTML="";
+chats.forEach(c=>{
+const b=el("button","item"+(c.id===cur?" on":""));b.type="button";
+b.append(el("span","",c.title||"Cuộc trò chuyện mới"),el("small","",c.t));
+const d=el("span","del","✕");d.title="Xoá";
+d.onclick=e=>{e.stopPropagation();const removed=c.sessionId;chats=chats.filter(x=>x.id!==c.id);if(cur===c.id){cur=chats[0]?.id??null;activeSessionId=get()?.sessionId??crypto.randomUUID()}if(removed)fetch("/api/reset",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:removed})}).catch(()=>{});renderAll()};
+b.append(d);b.onclick=()=>{cur=c.id;activeSessionId=c.sessionId;renderAll();side.classList.remove("open")};list.append(b)})}
+function msgRow(m){const r=el("div","row "+m.r);r.append(el("div","av",m.r==="bot"?"AI":"Bạn"));const w=el("div");w.append(el("div","who",m.r==="bot"?"Trợ lý":"Bạn"),el("div","body",m.x));r.append(w);return r}
+function renderMsgs(){msgs.innerHTML="";const c=get();$("ttl").textContent=c?.title||"Chatbot";if(!c||!c.m.length){msgs.append(el("div","empty"));return}c.m.forEach(m=>msgs.append(msgRow(m)));msgs.scrollTop=msgs.scrollHeight}
+function renderAll(){renderList();renderMsgs()}
+function newChat(){const c={id:nid++,sessionId:crypto.randomUUID(),title:"",t:"Vừa xong",m:[]};chats.unshift(c);cur=c.id;activeSessionId=c.sessionId}
+async function send(text){
+text=text.trim();if(!text||busy)return;let c=get();if(!c){newChat();c=get()}
+if(!c.m.length)c.title=text.length>32?text.slice(0,32)+"…":text;
+c.m.push({r:"user",x:text});inp.value="";inp.style.height="auto";renderAll();busy=true;$("send").disabled=true;
+const typing=el("div","row bot");typing.append(el("div","av","AI"));const w=el("div");w.append(el("div","who","Trợ lý"));const dots=el("div","body dots");dots.innerHTML="<i></i><i></i><i></i>";w.append(dots);typing.append(w);msgs.append(typing);msgs.scrollTop=msgs.scrollHeight;
+try{const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:activeSessionId,message:text})});const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||`HTTP ${response.status}`);c.m.push({r:"bot",x:data.reply||"Agent không trả lời."})}
+catch(error){c.m.push({r:"bot",x:`Không kết nối được với agent: ${error.message}. Kiểm tra server tại http://127.0.0.1:8000.`})}
+finally{busy=false;$("send").disabled=false;if(get()===c)renderMsgs();inp.focus()}}
+$("f").onsubmit=e=>{e.preventDefault();send(inp.value)};
+inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send(inp.value)}};
+inp.oninput=()=>{inp.style.height="auto";inp.style.height=inp.scrollHeight+"px"};
+$("new").onclick=()=>{newChat();renderAll();side.classList.remove("open");inp.focus()};
+$("menu").onclick=()=>side.classList.toggle("open");
+$("dash").onclick=$("set").onclick=()=>side.classList.remove("open");
+renderAll();
+</script>
+</body>
+</html>
