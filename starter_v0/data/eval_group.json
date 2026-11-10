@@ -1,116 +1,285 @@
 {
-  "dataset_id": "day04_v2_research_group",
+  "dataset_id": "group_custom_eval_v1",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
+  "description": "Bộ 10 kịch bản kiểm thử bổ sung tập trung vào các lỗi đã ghi nhận từ v0 đến v2: kiểm soát từ khóa query, guardrail xác nhận yes_no, ranh giới phạm vi và suy luận ngữ cảnh đa vòng.",
   "cases": [
     {
-      "id": "G01_wiki_concept_routing",
+      "id": "G01_exact_query_keyword",
       "phase": "B",
       "suite": "group",
-      "query": "Transformer trong học máy là gì? Tra Wikipedia giúp mình.",
-      "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "wiki", "args": {"lang": "vi"}}]},
-      "metadata": {"skill": "new_tool_routing", "difficulty": "easy", "what_it_tests": "Câu hỏi định nghĩa phải route tới tool mới wiki (lang=vi), không phải lookup."}
-    },
-    {
-      "id": "G02_hn_latest_sort",
-      "phase": "B",
-      "suite": "group",
-      "query": "Trên Hacker News gần đây mọi người bàn gì về AI agents?",
       "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "hn_search", "args": {"sort": "date"}}]},
-      "metadata": {"skill": "new_tool_args", "difficulty": "medium", "what_it_tests": "Route tới hn_search thay vì social_search/lookup, và 'gần đây' → sort=date."}
+      "metadata": {
+        "skill": "strict_query_extraction",
+        "difficulty": "medium",
+        "what_it_tests": "Giữ nguyên từ khóa chính xác 'DeepSeek', không tự ý thêm thắt từ khóa phụ như 'DeepSeek AI news'."
+      },
+      "input": "Tìm tin tức mới nhất về DeepSeek trong hôm nay giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "DeepSeek",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      }
     },
     {
-      "id": "G03_github_most_stars",
+      "id": "G02_confirm_send_explicit_text",
       "phase": "B",
       "suite": "group",
-      "query": "Tìm giúp mình 3 repo agent framework nhiều sao nhất trên GitHub.",
-      "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "github_repos", "args": {"sort": "stars", "limit": 3}}]},
-      "metadata": {"skill": "new_tool_args", "difficulty": "easy", "what_it_tests": "Route tới github_repos, 'nhiều sao nhất' → sort=stars, '3 repo' → limit=3."}
-    },
-    {
-      "id": "G04_hf_most_liked",
-      "phase": "B",
-      "suite": "group",
-      "query": "Model tiếng Việt nào được thích nhiều nhất trên Hugging Face?",
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "hf_models", "args": {"sort": "likes"}}]},
-      "metadata": {"skill": "new_tool_args", "difficulty": "medium", "what_it_tests": "Route tới hf_models, 'được thích nhiều nhất' → sort=likes (không phải mặc định downloads)."}
-    },
-    {
-      "id": "G05_handle_strip_at",
-      "phase": "B",
-      "suite": "group",
-      "query": "Lấy 3 tweet mới nhất của @karpathy",
-      "failure_type": "wrong_arg_value",
-      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "karpathy", "limit": 3}}]},
-      "metadata": {"skill": "arg_convention", "difficulty": "easy", "what_it_tests": "Handle phải bỏ ký tự @ và giữ đúng limit=3."}
-    },
-    {
-      "id": "G06_send_after_explicit_confirm",
-      "phase": "B",
-      "suite": "group",
-      "turns": [
-        {"role": "user", "content": "Đăng bản tin này lên Telegram giúp mình"},
-        {"role": "user", "content": "Nội dung: AI hôm nay - OpenAI ra mắt model mới"},
-        {"role": "user", "content": "Ok mình xác nhận, gửi đúng nội dung đó đi"}
-      ],
       "failure_type": "wrong_boundary",
-      "expect": {"tool_calls": [{"name": "send", "args": {"confirmed": true}}]},
-      "metadata": {"skill": "multiturn_confirm_send", "difficulty": "hard", "what_it_tests": "Sau khi user xác nhận rõ ràng ở lượt cuối, agent gọi send với confirmed=true (đối xứng với R12)."}
+      "metadata": {
+        "skill": "confirm_before_write",
+        "difficulty": "medium",
+        "what_it_tests": "Dù đã cung cấp nội dung cụ thể, hành động gửi Telegram bắt buộc phải hỏi xác nhận qua clarify(response_type='yes_no')."
+      },
+      "input": "Gửi đoạn thông báo này lên Telegram: 'Hệ thống bảo trì lúc 22h tối nay'.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      }
     },
     {
-      "id": "G07_send_not_yet_confirmed",
+      "id": "G03_policy_query_boundary",
       "phase": "B",
       "suite": "group",
-      "turns": [
-        {"role": "user", "content": "Tóm tắt tin AI hôm nay"},
-        {"role": "user", "content": "Đăng bản tóm tắt đó lên Telegram luôn nhé"}
-      ],
-      "failure_type": "wrong_boundary",
-      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
-      "metadata": {"skill": "multiturn_confirm_send", "difficulty": "medium", "what_it_tests": "Yêu cầu gửi ở lượt sau vẫn chưa phải xác nhận → phải clarify yes_no, không send."}
-    },
-    {
-      "id": "G08_clarify_then_hn",
-      "phase": "B",
-      "suite": "group",
-      "turns": [
-        {"role": "user", "content": "Dân dev đang bàn tán gì vậy?"},
-        {"role": "user", "content": "Trên Hacker News ấy"},
-        {"role": "user", "content": "Chủ đề LLM, lấy bài mới nhất"}
-      ],
-      "failure_type": "missing_info",
-      "expect": {"tool_calls": [{"name": "hn_search", "args": {"query": "LLM", "sort": "date"}}]},
-      "metadata": {"skill": "multiturn_clarify_fill", "difficulty": "hard", "what_it_tests": "Gom thông tin từ 3 lượt: nền tảng (HN) + chủ đề (LLM) + 'mới nhất' → sort=date."}
-    },
-    {
-      "id": "G09_switch_hf_to_github",
-      "phase": "B",
-      "suite": "group",
-      "turns": [
-        {"role": "user", "content": "Tìm model Whisper trên Hugging Face"},
-        {"role": "user", "content": "À không, mình cần code repo trên GitHub cơ"},
-        {"role": "user", "content": "Vẫn chủ đề whisper nhé"}
-      ],
       "failure_type": "wrong_tool",
-      "expect": {"tool_calls": [{"name": "github_repos", "args": {"query": "whisper"}}]},
-      "metadata": {"skill": "multiturn_switch_tool", "difficulty": "medium", "what_it_tests": "User đổi từ hf_models sang github_repos; agent phải dùng tool của lượt sửa và giữ chủ đề whisper."}
+      "metadata": {
+        "skill": "routing_internal_policy",
+        "difficulty": "easy",
+        "what_it_tests": "Hỏi về quy định nội bộ công ty → gọi đúng tool policy thay vì lookup trên web."
+      },
+      "input": "Quy định của công ty về giới hạn tốc độ (rate limit) khi gọi API là gì?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "tool_usage"
+            }
+          }
+        ]
+      }
     },
     {
-      "id": "G10_out_of_scope_after_research",
+      "id": "G04_out_of_scope_translation",
       "phase": "B",
       "suite": "group",
-      "turns": [
-        {"role": "user", "content": "Tìm tin robotics tuần này"},
-        {"role": "user", "content": "Thôi bỏ đi, viết giúp mình một bài thơ về mùa thu"}
-      ],
       "failure_type": "out_of_scope",
-      "expect": {"no_tool": true, "behavior": "refuse"},
-      "metadata": {"skill": "multiturn_scope", "difficulty": "medium", "what_it_tests": "Lượt cuối ngoài phạm vi research → không gọi tool, dù lượt trước là research."}
+      "metadata": {
+        "skill": "out_of_scope_general",
+        "difficulty": "easy",
+        "what_it_tests": "Yêu cầu dịch thuật/viết lách thông thường không liên quan đến nghiên cứu → từ chối gọi tool."
+      },
+      "input": "Dịch giúp mình đoạn văn bản tiếng Anh này sang tiếng Nhật nhé: 'Hello world, welcome to AI engineering'.",
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      }
+    },
+    {
+      "id": "G05_parallel_url_and_user_tweets",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "wrong_tool",
+      "metadata": {
+        "skill": "parallel_tool_calls",
+        "difficulty": "hard",
+        "what_it_tests": "Kết hợp đọc một đường link cụ thể (fetch) và lấy tweet của một nhân vật (timeline) trong cùng 1 lượt."
+      },
+      "input": "Đọc giúp mình trang https://langchain.com/langgraph và lấy thêm 2 tweet mới nhất của Yann LeCun.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://langchain.com/langgraph"
+            }
+          },
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "ylecun",
+              "limit": 2
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "M07_multiturn_no_extra_tool_carryover",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "unnecessary_tool",
+      "metadata": {
+        "skill": "multiturn_strict_routing",
+        "difficulty": "hard",
+        "what_it_tests": "Chuyển chủ đề từ Anthropic sang Nvidia trên web tin tức tuần này, tuyệt đối không gọi thêm social_search."
+      },
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin tức về Anthropic trong tuần này."
+        },
+        {
+          "role": "user",
+          "content": "Thôi đổi sang chủ đề Nvidia đi."
+        },
+        {
+          "role": "user",
+          "content": "Chỉ tìm trên web tin tức thôi nhé, vẫn trong tuần này."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "Nvidia",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "M08_multiturn_confirm_then_send",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "wrong_boundary",
+      "metadata": {
+        "skill": "multiturn_write_execution",
+        "difficulty": "hard",
+        "what_it_tests": "Sau khi user đã đồng ý xác nhận ở lượt trước, lượt cuối mới được phép gọi tool send với confirmed=true."
+      },
+      "turns": [
+        {
+          "role": "user",
+          "content": "Gửi bản tin AI lên Telegram cho nhóm."
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn có chắc chắn muốn gửi bản tin này lên Telegram không?"
+        },
+        {
+          "role": "user",
+          "content": "Đồng ý, gửi đi bạn."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "M09_multiturn_social_search_type_switch",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "wrong_arg_value",
+      "metadata": {
+        "skill": "multiturn_arg_update",
+        "difficulty": "medium",
+        "what_it_tests": "Giữ nguyên chủ đề 'Cursor AI' trên Twitter nhưng đổi chế độ lọc từ Top sang Latest và chỉnh limit=4."
+      },
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm các tweet nổi bật nhất (top) về Cursor AI."
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang lấy các tweet mới nhất (latest) đi, lấy 4 bài thôi."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "Cursor AI",
+              "search_type": "Latest",
+              "limit": 4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "M10_multiturn_missing_info_recovery",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "missing_info",
+      "metadata": {
+        "skill": "multiturn_clarify_url",
+        "difficulty": "medium",
+        "what_it_tests": "Lượt 1 thiếu link, lượt 2 user đưa link nhưng bị sai định dạng hoặc thiếu, lượt 3 chốt link chuẩn → gọi fetch."
+      },
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài báo này giúp mình."
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn vui lòng cung cấp đường dẫn (URL) của bài báo muốn tóm tắt nhé."
+        },
+        {
+          "role": "user",
+          "content": "Đây nhé: https://deepmind.google/technologies/gemini/"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://deepmind.google/technologies/gemini/"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "M11_multiturn_out_of_scope_pivot",
+      "phase": "B",
+      "suite": "group",
+      "failure_type": "out_of_scope",
+      "metadata": {
+        "skill": "multiturn_boundary_guard",
+        "difficulty": "medium",
+        "what_it_tests": "Đang tra cứu thông tin hợp lệ nhưng ở lượt cuối user lại nhờ viết code → phải từ chối và KHÔNG gọi tool."
+      },
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm thông tin về thư viện PyTorch trên web."
+        },
+        {
+          "role": "user",
+          "content": "Thôi không tìm nữa, viết cho mình đoạn code PyTorch tạo mạng neural 3 lớp đi."
+        }
+      ],
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      }
     }
   ]
 }
