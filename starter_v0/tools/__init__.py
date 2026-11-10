@@ -17,6 +17,14 @@ from .policy.tool import search_company_policy
 from .social_search.tool import search_tweets
 from .send.tool import send_telegram
 from .lookup.tool import web_search
+# New tools added by the team (no API key needed)
+from .wiki.tool import wiki_search
+from .hn_search.tool import hn_search
+from .github_repos.tool import github_repo_search
+from .hf_models.tool import hf_model_search
+from .post_x.tool import post_tweet
+from .send_email.tool import send_email
+from .share_internal.tool import share_internal_file
 
 
 # NOTE (starter_v0): tool names here are intentionally vague. These keys are the
@@ -35,8 +43,14 @@ TOOL_FUNCTIONS = {
     "policy": search_company_policy,
     "papers": arxiv_search,
     "paper_text": get_arxiv_paper_text,
-    # TODO(student): register your new tool here, e.g. "my_tool": my_tool_function,
-    # then declare it in artifacts/tools.yaml and run `pytest tests/test_tool_contract.py`.
+    # New tools (team): declared in artifacts/tools.yaml, tested in tests/test_tools_todo.py
+    "wiki": wiki_search,
+    "hn_search": hn_search,
+    "github_repos": github_repo_search,
+    "hf_models": hf_model_search,
+    "post": post_tweet,
+    "email": send_email,
+    "share_doc": share_internal_file,
 }
 
 
@@ -53,4 +67,3 @@ def to_openai_tools(declarations: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "parameters": item.get("parameters", {"type": "object", "properties": {}}),
         },
     } for item in declarations]
-
