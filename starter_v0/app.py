@@ -308,7 +308,7 @@ def on_toolbar_pick() -> None:
 st.session_state.setdefault("view", VIEW_CHAT)
 st.session_state.setdefault("busy", False)
 if "transcript" not in st.session_state:
-    new_session("v4")
+    new_session("v5")
 
 # Recover from an interrupted run (Stop button / browser refresh mid-answer).
 if st.session_state.busy and "pending" not in st.session_state:
@@ -364,7 +364,7 @@ with st.sidebar:
     presentation = st.toggle("🎤 Chế độ trình chiếu (chữ to)", value=True)
 
     st.divider()
-    version = st.text_input("Version label", value="v4", help="Áp dụng khi bấm Cuộc trò chuyện mới.").strip() or "v4"
+    version = st.text_input("Version label", value="v5", help="Áp dụng khi bấm Cuộc trò chuyện mới.").strip() or "v5"
     if st.button("🆕 Cuộc trò chuyện mới", use_container_width=True, type="primary", disabled=busy):
         new_session(version)
         st.rerun()

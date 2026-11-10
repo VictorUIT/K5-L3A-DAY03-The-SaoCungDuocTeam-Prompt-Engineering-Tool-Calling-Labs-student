@@ -1,0 +1,845 @@
+{
+  "run_id": "v5_B_group_gemini_20261110T140540399229",
+  "version": "v5",
+  "artifact_version": "v5+p06351cad3849+t6314d5706954",
+  "prompt_hash": "06351cad384998cfd1772a5a3e83d61c81833e32ac900ccc6f21010e0107c543",
+  "tools_hash": "6314d5706954a0eae2c4ad499a8d2033598e73a6b652af69f30b0f2b12fa3d6a",
+  "phase": "B",
+  "suite": "group",
+  "provider": "gemini",
+  "model": "gemini-3.5-flash",
+  "system_prompt": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/tools.yaml",
+  "eval_cases": "data/eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
+  "generated_at": "2026-11-10T14:05:40",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 10,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "G01_wiki_concept_routing",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "new_tool_routing",
+        "difficulty": "easy",
+        "what_it_tests": "Câu hỏi định nghĩa phải route tới tool mới wiki (lang=vi), không phải lookup."
+      },
+      "input": "Transformer trong học máy là gì? Tra Wikipedia giúp mình.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "wiki",
+            "args": {
+              "lang": "vi"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "wiki",
+            "args": {
+              "lang": "vi",
+              "query": "Transformer"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "wiki",
+          "args": {
+            "lang": "vi",
+            "query": "Transformer"
+          },
+          "result": {
+            "tool": "wiki_search",
+            "query": "Transformer",
+            "lang": "vi",
+            "items": [
+              {
+                "title": "GPT (mô hình ngôn ngữ)",
+                "url": "https://vi.wikipedia.org/wiki/GPT_(mô_hình_ngôn_ngữ)",
+                "source": "vi.wikipedia.org",
+                "summary": "Generative pre-trained transformer (GPT) là một loại mô hình ngôn ngữ lớn (LLM) được sử dụng rộng rãi trong các chatbot AI tạo sinh. GPT dựa trên một"
+              },
+              {
+                "title": "Transformer (mô hình học máy)",
+                "url": "https://vi.wikipedia.org/wiki/Transformer_(mô_hình_học_máy)",
+                "source": "vi.wikipedia.org",
+                "summary": "mô hình học máy. Transformer là một mô hình học sâu được giới thiệu năm 2017, được dùng chủ yếu ở lĩnh vực xử lý ngôn ngữ tự nhiên (NLP) và thị giác máy tính (CV). Giống"
+              },
+              {
+                "title": "Trí tuệ nhân tạo",
+                "url": "https://vi.wikipedia.org/wiki/Trí_tuệ_nhân_tạo",
+                "source": "vi.wikipedia.org",
+                "summary": "lĩnh vực khoa học máy tính chuyên phát triển và nghiên cứu về trí tuệ máy móc. đó. Sự tăng trưởng này tiếp tục tăng tốc sau năm 2017 nhờ kiến trúc transformer. Trong những năm 2020, sự xuất hiện của trí tuệ nhân tạo tạo sinh tiên"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_hn_latest_sort",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "new_tool_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới hn_search thay vì social_search/lookup, và 'gần đây' → sort=date."
+      },
+      "input": "Trên Hacker News gần đây mọi người bàn gì về AI agents?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "sort": "date"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "AI agents",
+              "sort": "date"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "query": "AI agents",
+            "sort": "date"
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "AI agents",
+            "sort": "date",
+            "items": [
+              {
+                "title": "Hire AI Agents and Pay in Monero (XMR)",
+                "url": "https://agents.monero.jobs",
+                "source": "agents.monero.jobs",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50436878",
+                "points": 1,
+                "created_at": "2026-11-10T06:44:45Z"
+              },
+              {
+                "title": "We're launching an in-game AI agent for WoW",
+                "url": "https://willocompanion.com/",
+                "source": "willocompanion.com",
+                "summary": "1 points, 1 comments - https://news.ycombinator.com/item?id=50436869",
+                "points": 1,
+                "created_at": "2026-11-10T06:44:05Z"
+              },
+              {
+                "title": "Codenotary released AgentMon Live as free, open-source software",
+                "url": "https://finance.yahoo.com/technology/ai/articles/codenotary-releases-agentmon-live-free-160000064.html",
+                "source": "finance.yahoo.com",
+                "summary": "2 points, 0 comments - https://news.ycombinator.com/item?id=50436638",
+                "points": 2,
+                "created_at": "2026-11-10T06:00:59Z"
+              },
+              {
+                "title": "FlashStates Unlocking Flexible Hybrid State Management for Agentic LLM Inference",
+                "url": "https://flashstates.ai/",
+                "source": "flashstates.ai",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50436074",
+                "points": 1,
+                "created_at": "2026-11-10T04:29:35Z"
+              },
+              {
+                "title": "Autonomous AI Agents Conduct End-to-End Research with Human Participants",
+                "url": "https://advanced.onlinelibrary.wiley.com/doi/10.1002/advs.76675",
+                "source": "advanced.onlinelibrary.wiley.com",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50436070",
+                "points": 1,
+                "created_at": "2026-11-10T04:29:26Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_github_most_stars",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "new_tool_args",
+        "difficulty": "easy",
+        "what_it_tests": "Route tới github_repos, 'nhiều sao nhất' → sort=stars, '3 repo' → limit=3."
+      },
+      "input": "Tìm giúp mình 3 repo agent framework nhiều sao nhất trên GitHub.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "sort": "stars",
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "limit": 3,
+              "query": "agent framework",
+              "sort": "stars"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "github_repos",
+          "args": {
+            "limit": 3,
+            "query": "agent framework",
+            "sort": "stars"
+          },
+          "result": {
+            "tool": "github_repo_search",
+            "query": "agent framework",
+            "sort": "stars",
+            "items": [
+              {
+                "title": "obra/superpowers",
+                "url": "https://github.com/obra/superpowers",
+                "source": "github.com",
+                "summary": "An agentic skills framework & software development methodology that works. (★ 315299, Shell)",
+                "stars": 315299,
+                "updated_at": "2026-11-03T23:24:58Z"
+              },
+              {
+                "title": "langchain-ai/langchain",
+                "url": "https://github.com/langchain-ai/langchain",
+                "source": "github.com",
+                "summary": "The agent engineering platform. (★ 149289, Python)",
+                "stars": 149289,
+                "updated_at": "2026-11-10T04:12:11Z"
+              },
+              {
+                "title": "TauricResearch/TradingAgents",
+                "url": "https://github.com/TauricResearch/TradingAgents",
+                "source": "github.com",
+                "summary": "TradingAgents: Multi-Agents LLM Financial Trading Framework (★ 121718, Python)",
+                "stars": 121718,
+                "updated_at": "2026-11-04T10:13:58Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G04_hf_most_liked",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "new_tool_args",
+        "difficulty": "medium",
+        "what_it_tests": "Route tới hf_models, 'được thích nhiều nhất' → sort=likes (không phải mặc định downloads)."
+      },
+      "input": "Model tiếng Việt nào được thích nhiều nhất trên Hugging Face?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hf_models",
+            "args": {
+              "sort": "likes"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hf_models",
+            "args": {
+              "query": "vietnamese",
+              "limit": 5,
+              "sort": "likes"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hf_models",
+          "args": {
+            "query": "vietnamese",
+            "limit": 5,
+            "sort": "likes"
+          },
+          "result": {
+            "tool": "hf_model_search",
+            "query": "vietnamese",
+            "sort": "likes",
+            "items": [
+              {
+                "title": "nvidia/parakeet-ctc-0.6b-Vietnamese",
+                "url": "https://huggingface.co/nvidia/parakeet-ctc-0.6b-Vietnamese",
+                "source": "huggingface.co",
+                "summary": "task: automatic-speech-recognition, downloads: 2279, likes: 94",
+                "downloads": 2279,
+                "likes": 94
+              },
+              {
+                "title": "bkai-foundation-models/vietnamese-bi-encoder",
+                "url": "https://huggingface.co/bkai-foundation-models/vietnamese-bi-encoder",
+                "source": "huggingface.co",
+                "summary": "task: sentence-similarity, downloads: 968379, likes: 83",
+                "downloads": 968379,
+                "likes": 83
+              },
+              {
+                "title": "AITeamVN/Vietnamese_Embedding",
+                "url": "https://huggingface.co/AITeamVN/Vietnamese_Embedding",
+                "source": "huggingface.co",
+                "summary": "task: sentence-similarity, downloads: 11945, likes: 70",
+                "downloads": 11945,
+                "likes": 70
+              },
+              {
+                "title": "hynt/F5-TTS-Vietnamese-ViVoice",
+                "url": "https://huggingface.co/hynt/F5-TTS-Vietnamese-ViVoice",
+                "source": "huggingface.co",
+                "summary": "task: text-to-speech, downloads: 8083, likes: 59",
+                "downloads": 8083,
+                "likes": 59
+              },
+              {
+                "title": "dangvantuan/vietnamese-embedding",
+                "url": "https://huggingface.co/dangvantuan/vietnamese-embedding",
+                "source": "huggingface.co",
+                "summary": "task: sentence-similarity, downloads: 1559, likes: 56",
+                "downloads": 1559,
+                "likes": 56
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_handle_strip_at",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "arg_convention",
+        "difficulty": "easy",
+        "what_it_tests": "Handle phải bỏ ký tự @ và giữ đúng limit=3."
+      },
+      "input": "Lấy 3 tweet mới nhất của @karpathy",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 3
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "karpathy",
+              "limit": 3
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "karpathy",
+            "limit": 3
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_send_after_explicit_confirm",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirm_send",
+        "difficulty": "hard",
+        "what_it_tests": "Sau khi user xác nhận rõ ràng ở lượt cuối, agent gọi send với confirmed=true (đối xứng với R12)."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Đăng bản tin này lên Telegram giúp mình"
+        },
+        {
+          "role": "user",
+          "content": "Nội dung: AI hôm nay - OpenAI ra mắt model mới"
+        },
+        {
+          "role": "user",
+          "content": "Ok mình xác nhận, gửi đúng nội dung đó đi"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "send",
+            "args": {
+              "confirmed": true,
+              "text": "AI hôm nay - OpenAI ra mắt model mới"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "send",
+          "args": {
+            "confirmed": true,
+            "text": "AI hôm nay - OpenAI ra mắt model mới"
+          },
+          "result": {
+            "tool": "send_telegram",
+            "error": "RuntimeError",
+            "message": "Missing TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID env var"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_send_not_yet_confirmed",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirm_send",
+        "difficulty": "medium",
+        "what_it_tests": "Yêu cầu gửi ở lượt sau vẫn chưa phải xác nhận → phải clarify yes_no, không send."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt tin AI hôm nay"
+        },
+        {
+          "role": "user",
+          "content": "Đăng bản tóm tắt đó lên Telegram luôn nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có muốn gửi bản tóm tắt tin tức AI này lên kênh Telegram của nhóm không?",
+              "response_type": "yes_no"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có muốn gửi bản tóm tắt tin tức AI này lên kênh Telegram của nhóm không?",
+            "response_type": "yes_no"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có muốn gửi bản tóm tắt tin tức AI này lên kênh Telegram của nhóm không?",
+            "response_type": "yes_no",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_clarify_then_hn",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_clarify_fill",
+        "difficulty": "hard",
+        "what_it_tests": "Gom thông tin từ 3 lượt: nền tảng (HN) + chủ đề (LLM) + 'mới nhất' → sort=date."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Dân dev đang bàn tán gì vậy?"
+        },
+        {
+          "role": "user",
+          "content": "Trên Hacker News ấy"
+        },
+        {
+          "role": "user",
+          "content": "Chủ đề LLM, lấy bài mới nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "LLM",
+              "sort": "date"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "hn_search",
+            "args": {
+              "query": "LLM",
+              "sort": "date",
+              "limit": 5
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "hn_search",
+          "args": {
+            "query": "LLM",
+            "sort": "date",
+            "limit": 5
+          },
+          "result": {
+            "tool": "hn_search",
+            "query": "LLM",
+            "sort": "date",
+            "items": [
+              {
+                "title": "Socratic-tutor – turns an LLM into a strict personal tutor",
+                "url": "https://github.com/janestreet/agent_skills",
+                "source": "github.com",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50436087",
+                "points": 1,
+                "created_at": "2026-11-10T04:31:59Z"
+              },
+              {
+                "title": "FlashStates Unlocking Flexible Hybrid State Management for Agentic LLM Inference",
+                "url": "https://flashstates.ai/",
+                "source": "flashstates.ai",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50436074",
+                "points": 1,
+                "created_at": "2026-11-10T04:29:35Z"
+              },
+              {
+                "title": "Lumo. On Your Desktop",
+                "url": "https://mrthp.github.io/lumo-desktop/",
+                "source": "mrthp.github.io",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50435914",
+                "points": 1,
+                "created_at": "2026-11-10T04:03:09Z"
+              },
+              {
+                "title": "Notes on Fable 5.2",
+                "url": "https://llmleaderboard.com/guides/claude-fable-5-2",
+                "source": "llmleaderboard.com",
+                "summary": "1 points, 0 comments - https://news.ycombinator.com/item?id=50435663",
+                "points": 1,
+                "created_at": "2026-11-10T03:20:16Z"
+              },
+              {
+                "title": "CoreWeave bond yield tops 16% as AI credit stress rises",
+                "url": "https://www.cnbc.com/2026/11/06/coreweave-bond-yield-tops-16percent-as-ai-credit-stress-rises.html",
+                "source": "cnbc.com",
+                "summary": "107 points, 47 comments - https://news.ycombinator.com/item?id=50435660",
+                "points": 107,
+                "created_at": "2026-11-10T03:20:06Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_switch_hf_to_github",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_switch_tool",
+        "difficulty": "medium",
+        "what_it_tests": "User đổi từ hf_models sang github_repos; agent phải dùng tool của lượt sửa và giữ chủ đề whisper."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm model Whisper trên Hugging Face"
+        },
+        {
+          "role": "user",
+          "content": "À không, mình cần code repo trên GitHub cơ"
+        },
+        {
+          "role": "user",
+          "content": "Vẫn chủ đề whisper nhé"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "query": "whisper"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "github_repos",
+            "args": {
+              "query": "whisper"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "github_repos",
+          "args": {
+            "query": "whisper"
+          },
+          "result": {
+            "tool": "github_repo_search",
+            "query": "whisper",
+            "sort": "stars",
+            "items": [
+              {
+                "title": "openai/whisper",
+                "url": "https://github.com/openai/whisper",
+                "source": "github.com",
+                "summary": "Robust Speech Recognition via Large-Scale Weak Supervision (★ 112322, Python)",
+                "stars": 112322,
+                "updated_at": "2026-08-31T17:19:19Z"
+              },
+              {
+                "title": "jamiepine/voicebox",
+                "url": "https://github.com/jamiepine/voicebox",
+                "source": "github.com",
+                "summary": "The open-source AI voice studio. Clone, dictate, create. (★ 60325, Python)",
+                "stars": 60325,
+                "updated_at": "2026-10-07T01:17:58Z"
+              },
+              {
+                "title": "ggml-org/whisper.cpp",
+                "url": "https://github.com/ggml-org/whisper.cpp",
+                "source": "github.com",
+                "summary": "Port of OpenAI's Whisper model in C/C++ (★ 55056, C++)",
+                "stars": 55056,
+                "updated_at": "2026-11-10T06:09:21Z"
+              },
+              {
+                "title": "Zackriya-Solutions/meetily",
+                "url": "https://github.com/Zackriya-Solutions/meetily",
+                "source": "github.com",
+                "summary": "Privacy-first AI meeting note taker for Windows and macOS. Free, open source (MIT). On-device Whisper/Parakeet transcription and speaker diarization, no meeting bot. Open-source alternative to Granola, Otter and Fireflies. https://meetily.ai (★ 32581, Rust)",
+                "stars": 32581,
+                "updated_at": "2026-11-09T18:12:22Z"
+              },
+              {
+                "title": "SYSTRAN/faster-whisper",
+                "url": "https://github.com/SYSTRAN/faster-whisper",
+                "source": "github.com",
+                "summary": "Faster Whisper transcription with CTranslate2 (★ 26635, Python)",
+                "stars": 26635,
+                "updated_at": "2026-11-06T17:24:51Z"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_out_of_scope_after_research",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_scope",
+        "difficulty": "medium",
+        "what_it_tests": "Lượt cuối ngoài phạm vi research → không gọi tool, dù lượt trước là research."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin robotics tuần này"
+        },
+        {
+          "role": "user",
+          "content": "Thôi bỏ đi, viết giúp mình một bài thơ về mùa thu"
+        }
+      ],
+      "expect": {
+        "no_tool": true,
+        "behavior": "refuse"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Xin lỗi bạn, mình là trợ lý nghiên cứu chuyên hỗ trợ tìm kiếm, đọc và tổng hợp thông tin, tin tức, bài báo khoa học cũng như các bài đăng trên mạng xã hội. Việc sáng tác thơ hoặc sáng tạo nghệ thuật nằm ngoài phạm vi hỗ trợ của mình. \n\nNếu bạn cần tìm kiếm thông tin hay nghiên cứu về bất kỳ chủ đề nào khác, bạn cứ nhắn cho mình nhé!",
+        "case_failure_type": "out_of_scope",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    }
+  ]
+}
