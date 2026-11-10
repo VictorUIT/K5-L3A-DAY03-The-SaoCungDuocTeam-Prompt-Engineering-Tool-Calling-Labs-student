@@ -6,9 +6,9 @@
 
 ## Team
 
-- Team: SaoCungDuoc (làm cá nhân)
-- Members: SaoCungDuoc
-- Provider/model: Gemini / gemini-3.5-flash
+- Team: The SaoCungDuoc Team
+- Members: TEAM.md
+- Provider/model: Gemini-3.5 Flash
 
 ---
 
