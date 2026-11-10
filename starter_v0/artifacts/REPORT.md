@@ -24,7 +24,7 @@
 
 Kết quả eval cố định (20 case, Gemini): **v0 55% → v1 85% → v2 95% → v3 100% → v4 100% → v5 100%**; 10 case nhóm: **10/10**; 8 case safety tool (v5): **8/8** (trước v5: 6/8).
 
-**Link dùng thử (deploy):**
+**Link dùng thử (deploy):** https://k5-l3-a-day-03-the-sao-cung-duoc-te.vercel.app/
 
 > Demo chạy local: `streamlit run app.py` → http://localhost:8501 (có thể public tạm bằng `cloudflared tunnel --url http://localhost:8501`).
 >
