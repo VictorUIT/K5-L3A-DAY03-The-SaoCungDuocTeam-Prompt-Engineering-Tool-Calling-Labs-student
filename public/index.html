@@ -104,8 +104,8 @@ text=text.trim();if(!text||busy)return;let c=get();if(!c){newChat();c=get()}
 if(!c.m.length)c.title=text.length>32?text.slice(0,32)+"…":text;
 c.m.push({r:"user",x:text});inp.value="";inp.style.height="auto";renderAll();busy=true;$("send").disabled=true;
 const typing=el("div","row bot");typing.append(el("div","av","AI"));const w=el("div");w.append(el("div","who","Trợ lý"));const dots=el("div","body dots");dots.innerHTML="<i></i><i></i><i></i>";w.append(dots);typing.append(w);msgs.append(typing);msgs.scrollTop=msgs.scrollHeight;
-try{const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:activeSessionId,message:text})});const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||`HTTP ${response.status}`);c.m.push({r:"bot",x:data.reply||"Agent không trả lời."})}
-catch(error){c.m.push({r:"bot",x:`Không kết nối được với agent: ${error.message}. Kiểm tra server tại http://127.0.0.1:8000.`})}
+try{const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({session_id:activeSessionId,message:text,history:c.m.slice(0,-1).map(m=>({role:m.r==="bot"?"assistant":"user",content:m.x}))})});const data=await response.json();if(!response.ok)throw new Error(data.message||data.error||`HTTP ${response.status}`);c.m.push({r:"bot",x:data.reply||"Agent không trả lời."})}
+catch(error){c.m.push({r:"bot",x:`Không kết nối được với agent: ${error.message}. Kiểm tra cấu hình server/API.`})}
 finally{busy=false;$("send").disabled=false;if(get()===c)renderMsgs();inp.focus()}}
 $("f").onsubmit=e=>{e.preventDefault();send(inp.value)};
 inp.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send(inp.value)}};

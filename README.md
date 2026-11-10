@@ -340,6 +340,20 @@ Try at least 3 live turns, for example:
 
 Lưu ý: link `trycloudflare.com` là tạm thời, sống theo phiên `cloudflared` (tắt lệnh là mất). Giữ lệnh chạy trong suốt buổi showdown. Nếu team deploy hẳn lên Vercel/Streamlit Cloud thì dùng link đó thay cho tunnel.
 
+## Deploy chatbot trên Vercel
+
+Repo có thể deploy giao diện HTML và API Python cùng một Vercel project:
+
+1. Import repository trên Vercel và đặt **Root Directory** là thư mục gốc của repository (không phải `starter_v0/`).
+2. Trong **Settings → Environment Variables**, thêm `OPENROUTER_API_KEY`. Có thể đặt `AGENT_PROVIDER=openrouter` (mặc định) và `AGENT_MODEL` nếu muốn chọn model khác. Nếu dùng tool cần dịch vụ ngoài, cấu hình thêm các key tương ứng như `TAVILY_API_KEY`, `FIRECRAWL_API_KEY` hoặc `RAPIDAPI_KEY`.
+3. Deploy. Vercel nhận diện Flask app tại `app.py`, cài các package trong `requirements.txt`, và phục vụ giao diện từ `public/index.html`.
+
+Không commit `.env` hoặc API keys. Mỗi request gửi tối đa 5 cặp hội thoại gần nhất từ trình duyệt; API không lưu session trong bộ nhớ serverless. Tải lại trang sẽ bắt đầu một phiên mới. `vercel.json` đặt thời lượng tối đa function là 60 giây, tùy giới hạn plan của Vercel.
+
+API chat công khai có thể phát sinh chi phí từ provider. Trước khi chia sẻ rộng, hãy bật giới hạn chi tiêu/rate limit ở provider và cấu hình Vercel Deployment Protection hoặc bổ sung xác thực phù hợp.
+
+Để chạy và kiểm tra theo cấu hình Vercel trên máy local, cài Vercel CLI rồi chạy `vercel dev` từ thư mục gốc.
+
 ## Step 6 — Report + Debate Poster
 
 Hoàn thành `artifacts/REPORT.md`. File này có 2 phần với deadline khác nhau:

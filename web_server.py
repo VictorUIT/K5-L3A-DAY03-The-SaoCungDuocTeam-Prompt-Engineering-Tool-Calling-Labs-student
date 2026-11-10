@@ -20,7 +20,7 @@ from tools import load_tool_declarations, to_openai_tools
 
 
 ROOT = PROJECT_ROOT
-PAGE = Path(__file__).parent / "Giao diện Chatbot.html"
+PAGE = Path(__file__).parent / "public" / "index.html"
 load_lab_env(ROOT)
 PROVIDER_NAME = os.getenv("AGENT_PROVIDER", "openrouter")
 MODEL = os.getenv("AGENT_MODEL") or None
