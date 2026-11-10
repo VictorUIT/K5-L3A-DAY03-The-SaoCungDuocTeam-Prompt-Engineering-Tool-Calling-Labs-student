@@ -16,9 +16,11 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
+from contextlib import contextmanager
 from datetime import datetime
-from typing import Any
+from typing import Any, Iterator
 
 import streamlit as st
 
@@ -205,8 +207,60 @@ def tool_label(name: str) -> str:
     return f"{info['icon']} {info.get('label', name)}"
 
 
+# Keys a viewer can paste into the sidebar (kept only in their browser session, never on disk).
+USER_KEY_FIELDS: list[tuple[str, str]] = [
+    ("GEMINI_API_KEY", "Gemini API key"),
+    ("OPENROUTER_API_KEY", "OpenRouter API key"),
+    ("OPENAI_API_KEY", "OpenAI API key"),
+    ("ANTHROPIC_API_KEY", "Anthropic API key"),
+    ("TAVILY_API_KEY", "Tavily (Tìm kiếm web & tin tức)"),
+    ("FIRECRAWL_API_KEY", "Firecrawl (Đọc nội dung trang web)"),
+    ("RAPIDAPI_KEY", "RapidAPI (Tweet trên X)"),
+]
+
+
+def session_keys() -> dict[str, str]:
+    keys = {}
+    for env_name, _ in USER_KEY_FIELDS:
+        value = (st.session_state.get(f"key_{env_name}") or "").strip()
+        if value:
+            keys[env_name] = value
+    return keys
+
+
+@st.cache_resource
+def _env_lock() -> threading.Lock:
+    """One lock per server process (shared by every viewer), so keys never leak across sessions."""
+    return threading.Lock()
+
+
+@contextmanager
+def user_env() -> Iterator[None]:
+    """Expose this viewer's keys as env vars only while their agent turn / tool call runs.
+
+    Tools and providers read keys with os.getenv, and os.environ is shared by every session on
+    the server, so keys are set under a process-wide lock and restored right after.
+    """
+    keys = session_keys()
+    if not keys:
+        yield
+        return
+    with _env_lock():
+        previous = {name: os.environ.get(name) for name in keys}
+        os.environ.update(keys)
+        try:
+            yield
+        finally:
+            for name, value in previous.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+
+
 def missing_env(names: list[str]) -> list[str]:
-    return [name for name in names if not os.getenv(name)]
+    keys = session_keys()
+    return [name for name in names if not os.getenv(name) and name not in keys]
 
 
 def tool_ready(name: str) -> bool:
@@ -349,8 +403,20 @@ with st.sidebar:
     model: str | None = (st.session_state.get("model") or "").strip() or None
 
     lacking = missing_env(provider_info["env"])
+    with st.expander("🔑 API key của bạn", expanded=bool(lacking)):
+        st.caption(
+            "Key chỉ giữ trong phiên trình duyệt này, không lưu trên server, không ghi vào transcript. "
+            "Không có key vẫn chạy thử được Wikipedia, Hacker News, GitHub, Hugging Face, arXiv ở trang Bộ công cụ."
+        )
+        for env_name, label in USER_KEY_FIELDS:
+            if env_name in {"GEMINI_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"} \
+                    and env_name not in provider_info["env"]:
+                continue  # only show the key of the selected provider
+            st.text_input(label, key=f"key_{env_name}", type="password", disabled=busy,
+                          placeholder="đã có trên server" if os.getenv(env_name) else "dán key vào đây")
+    lacking = missing_env(provider_info["env"])
     if lacking:
-        st.warning(f"Thiếu `{'`, `'.join(lacking)}` trong `.env`, provider này sẽ báo lỗi khi gửi.", icon="🔑")
+        st.warning(f"Cần `{'`, `'.join(lacking)}` để chat. Nhập ở mục 🔑 phía trên.", icon="🔑")
     else:
         st.success(f"{provider_info['label']} sẵn sàng · `{model or provider_info['default']}`", icon="✅")
 
@@ -528,14 +594,15 @@ def run_turn(user_text: str) -> None:
                     st.caption(f"↳ {summarize_result(payload.get('result'))} · {took:.1f}s")
 
             try:
-                result = run_model_tool_loop(
-                    provider=make_provider(provider_name),
-                    messages=messages,
-                    tools=to_openai_tools(declarations),
-                    model=model,
-                    max_tool_rounds=MAX_TOOL_ROUNDS,
-                    on_event=on_event,
-                )
+                with user_env():
+                    result = run_model_tool_loop(
+                        provider=make_provider(provider_name),
+                        messages=messages,
+                        tools=to_openai_tools(declarations),
+                        model=model,
+                        max_tool_rounds=MAX_TOOL_ROUNDS,
+                        on_event=on_event,
+                    )
                 turn_record.update(result)
                 answer = result["assistant_text"] or "(không có nội dung trả lời)"
                 if result["status"] in ("answered", "waiting_for_user"):
@@ -558,7 +625,7 @@ def run_turn(user_text: str) -> None:
                 )
             except Exception as exc:
                 elapsed = time.perf_counter() - started
-                hint = " Kiểm tra API key trong `.env`." if lacking else ""
+                hint = " Nhập API key ở mục 🔑 trong sidebar." if lacking else ""
                 answer = f"⚠️ **Lỗi khi gọi {provider_info['label']}:** `{type(exc).__name__}: {exc}`{hint}"
                 turn_record.update({"status": "provider_error", "error": f"{type(exc).__name__}: {exc}"})
                 status.update(label="Có lỗi xảy ra", state="error", expanded=False)
@@ -688,7 +755,8 @@ def tools_view() -> None:
                 with st.spinner(f"Đang chạy {tool_label(name)}…"):
                     started = time.perf_counter()
                     try:
-                        result = TOOL_FUNCTIONS[name](**args)
+                        with user_env():
+                            result = TOOL_FUNCTIONS[name](**args)
                     except Exception as exc:
                         result = {"error": type(exc).__name__, "message": str(exc)}
                     took = time.perf_counter() - started
