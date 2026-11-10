@@ -1,0 +1,460 @@
+{
+  "transcript_id": "v3_gemini_ui_20261110T124431363621",
+  "version": "v3",
+  "artifact_version": "v3+p06351cad3849+tf03e40ed643b",
+  "prompt_hash": "06351cad384998cfd1772a5a3e83d61c81833e32ac900ccc6f21010e0107c543",
+  "tools_hash": "f03e40ed643bc02ff6a2deac022cae195a9e3c9a4f3b458ebbc95adea3f5dd70",
+  "provider": "gemini",
+  "model": null,
+  "system_prompt": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "source": "streamlit_ui",
+  "created_at": "2026-11-10T12:44:31",
+  "updated_at": "2026-11-10T12:46:11",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T12:44:53",
+      "provider": "gemini",
+      "model": null,
+      "user": "Lấy 3 tweet mới nhất của Andrej Karpathy",
+      "status": "answered",
+      "assistant_text": "Rất tiếc, hệ thống hiện gặp lỗi kết nối với API (thiếu cấu hình API key) nên không thể lấy trực tiếp 3 tweet mới nhất của Andrej Karpathy (@karpathy) vào lúc này. \n\nBạn có thể truy cập trực tiếp tài khoản của anh ấy tại đường dẫn: [https://x.com/karpathy](https://x.com/karpathy) để xem các bài đăng mới nhất.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "timeline",
+              "args": {
+                "limit": 3,
+                "screenname": "karpathy"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "timeline",
+              "args": {
+                "limit": 3,
+                "screenname": "karpathy"
+              },
+              "result": {
+                "tool": "get_user_tweets",
+                "error": "RuntimeError",
+                "message": "Missing RAPIDAPI_KEY env var"
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Rất tiếc, hệ thống hiện gặp lỗi kết nối với API (thiếu cấu hình API key) nên không thể lấy trực tiếp 3 tweet mới nhất của Andrej Karpathy (@karpathy) vào lúc này. \n\nBạn có thể truy cập trực tiếp tài khoản của anh ấy tại đường dẫn: [https://x.com/karpathy](https://x.com/karpathy) để xem các bài đăng mới nhất.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "timeline",
+          "args": {
+            "limit": 3,
+            "screenname": "karpathy"
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "RuntimeError",
+            "message": "Missing RAPIDAPI_KEY env var"
+          }
+        }
+      ],
+      "ended_at": "2026-11-10T12:44:58"
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T12:45:26",
+      "provider": "gemini",
+      "model": null,
+      "user": "Tìm 3 repo agent framework nhiều sao nhất trên GitHub",
+      "status": "answered",
+      "assistant_text": "Dưới đây là 3 repository về **agent framework** có số lượng sao (stars) nhiều nhất trên GitHub:\n\n1. **[obra/superpowers](https://github.com/obra/superpowers)**  \n   - **Số sao:** ~315,266 ⭐  \n   - **Ngôn ngữ:** Shell  \n   - **Mô tả:** Khung kỹ năng agentic (agentic skills framework) và phương pháp luận phát triển phần mềm sử dụng AI agent.\n\n2. **[langchain-ai/langchain](https://github.com/langchain-ai/langchain)**  \n   - **Số sao:** ~149,288 ⭐  \n   - **Ngôn ngữ:** Python  \n   - **Mô tả:** Nền tảng kỹ thuật xây dựng các ứng dụng và agent dựa trên LLM phổ biến nhất hiện nay.\n\n3. **[TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents)**  \n   - **Số sao:** ~121,696 ⭐  \n   - **Ngôn ngữ:** Python  \n   - **Mô tả:** Framework Multi-Agent LLM chuyên dụng cho lĩnh vực giao dịch và phân tích tài chính.",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "github_repos",
+              "args": {
+                "limit": 3,
+                "query": "agent framework",
+                "sort": "stars"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "github_repos",
+              "args": {
+                "limit": 3,
+                "query": "agent framework",
+                "sort": "stars"
+              },
+              "result": {
+                "tool": "github_repo_search",
+                "query": "agent framework",
+                "sort": "stars",
+                "items": [
+                  {
+                    "title": "obra/superpowers",
+                    "url": "https://github.com/obra/superpowers",
+                    "source": "github.com",
+                    "summary": "An agentic skills framework & software development methodology that works. (★ 315266, Shell)",
+                    "stars": 315266,
+                    "updated_at": "2026-11-03T23:24:58Z"
+                  },
+                  {
+                    "title": "langchain-ai/langchain",
+                    "url": "https://github.com/langchain-ai/langchain",
+                    "source": "github.com",
+                    "summary": "The agent engineering platform. (★ 149288, Python)",
+                    "stars": 149288,
+                    "updated_at": "2026-11-10T04:12:11Z"
+                  },
+                  {
+                    "title": "TauricResearch/TradingAgents",
+                    "url": "https://github.com/TauricResearch/TradingAgents",
+                    "source": "github.com",
+                    "summary": "TradingAgents: Multi-Agents LLM Financial Trading Framework (★ 121696, Python)",
+                    "stars": 121696,
+                    "updated_at": "2026-11-04T10:13:58Z"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "Dưới đây là 3 repository về **agent framework** có số lượng sao (stars) nhiều nhất trên GitHub:\n\n1. **[obra/superpowers](https://github.com/obra/superpowers)**  \n   - **Số sao:** ~315,266 ⭐  \n   - **Ngôn ngữ:** Shell  \n   - **Mô tả:** Khung kỹ năng agentic (agentic skills framework) và phương pháp luận phát triển phần mềm sử dụng AI agent.\n\n2. **[langchain-ai/langchain](https://github.com/langchain-ai/langchain)**  \n   - **Số sao:** ~149,288 ⭐  \n   - **Ngôn ngữ:** Python  \n   - **Mô tả:** Nền tảng kỹ thuật xây dựng các ứng dụng và agent dựa trên LLM phổ biến nhất hiện nay.\n\n3. **[TauricResearch/TradingAgents](https://github.com/TauricResearch/TradingAgents)**  \n   - **Số sao:** ~121,696 ⭐  \n   - **Ngôn ngữ:** Python  \n   - **Mô tả:** Framework Multi-Agent LLM chuyên dụng cho lĩnh vực giao dịch và phân tích tài chính.",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "github_repos",
+          "args": {
+            "limit": 3,
+            "query": "agent framework",
+            "sort": "stars"
+          },
+          "result": {
+            "tool": "github_repo_search",
+            "query": "agent framework",
+            "sort": "stars",
+            "items": [
+              {
+                "title": "obra/superpowers",
+                "url": "https://github.com/obra/superpowers",
+                "source": "github.com",
+                "summary": "An agentic skills framework & software development methodology that works. (★ 315266, Shell)",
+                "stars": 315266,
+                "updated_at": "2026-11-03T23:24:58Z"
+              },
+              {
+                "title": "langchain-ai/langchain",
+                "url": "https://github.com/langchain-ai/langchain",
+                "source": "github.com",
+                "summary": "The agent engineering platform. (★ 149288, Python)",
+                "stars": 149288,
+                "updated_at": "2026-11-10T04:12:11Z"
+              },
+              {
+                "title": "TauricResearch/TradingAgents",
+                "url": "https://github.com/TauricResearch/TradingAgents",
+                "source": "github.com",
+                "summary": "TradingAgents: Multi-Agents LLM Financial Trading Framework (★ 121696, Python)",
+                "stars": 121696,
+                "updated_at": "2026-11-04T10:13:58Z"
+              }
+            ]
+          }
+        }
+      ],
+      "ended_at": "2026-11-10T12:45:34"
+    },
+    {
+      "turn_index": 3,
+      "started_at": "2026-11-10T12:45:59",
+      "provider": "gemini",
+      "model": null,
+      "user": "Tin tức AI hôm nay có gì nổi bật?",
+      "status": "answered",
+      "assistant_text": "**Tin tức AI nổi bật hôm nay**\n\n**Thị trường lao động & Việc làm**\n- **Xu hướng \"AI rebounding\":** Gần 20% doanh nghiệp Mỹ từng thay thế nhân sự bằng AI đang phải tuyển dụng trở lại các chuyên gia. Lý do là các công cụ AI không đạt hiệu quả như kỳ vọng khi thiếu đi sự giám sát và năng lực chuyên môn của con người. — [Fortune](https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security)\n- **Tác động hai mặt của AI:** Giới chuyên gia nhận định AI đang gây áp lực lên các công việc mang tính lặp đi lặp lại (như nhập liệu, viết nội dung cơ bản, tổng đài), nhưng đồng thời mở ra nhiều cơ hội việc làm mới trong mảng xây dựng hạ tầng dữ liệu và sản xuất chip bán dẫn. — [FOX 10 TV](https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity)\n\n**Chính sách & Hạ tầng**\n- **Tranh cãi về dự luật trung tâm dữ liệu AI:** Dự luật mới tại Quốc hội Mỹ nhằm đẩy nhanh quá trình cấp phép cho các trung tâm dữ liệu AI đang gặp phải phản ứng trái chiều từ giới phân tích và các tổ chức xã hội do lo ngại về tác động môi trường và tính minh bạch. — [TIME](https://time.com/article/2026/11/10/permitting-bill-data-centers)\n\n**An ninh & Quốc phòng**\n- **AI hỗ trợ đảm bảo an ninh tại World Cup:** Quân đội Mỹ vừa công bố thông tin công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng phát hiện và tháo gỡ kịp thời mối đe dọa an ninh tại giải đấu World Cup. — [Federal News Network](https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat)",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "lookup",
+              "args": {
+                "timeframe": "day",
+                "topic": "news",
+                "query": "AI"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "lookup",
+              "args": {
+                "timeframe": "day",
+                "topic": "news",
+                "query": "AI"
+              },
+              "result": {
+                "tool": "web_search",
+                "query": "AI",
+                "topic": "news",
+                "timeframe": "day",
+                "items": [
+                  {
+                    "title": "AI and your job: Threat or opportunity?",
+                    "url": "https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity",
+                    "source": "fox10tv.com",
+                    "summary": "MOBILE, Ala. (WALA) - Artificial intelligence is becoming a bigger part of everyday life, raising questions about what the technology could mean for workers and their jobs.\n\nSome economists believe AI poses a particular threat to entry-level and repetitive work, including call center, data entry and junior copywriting jobs, according to The Wall Street Journal. Those tasks may be easier to automate. [...] But AI could also create opportunities. A Bloomberg article points to potential job growth in construction and manufacturing as companies build data centers and produce the chips that power the technology. Some higher-skilled office workers could also benefit if AI helps them become more productive. [...] The long-term impact on jobs remains unclear, but workers can take steps to prepare. Exploring AI chatbots, writing assistants and other tools may help people find ways to work more efficiently and develop skills that complement the technology.",
+                    "score": 0.42348245
+                  },
+                  {
+                    "title": "Opinion: AI cannot replace being human – The Battalion",
+                    "url": "https://thebatt.com/opinion/opinion-ai-cannot-replace-being-human",
+                    "source": "thebatt.com",
+                    "summary": "I understand the appeal. College is busy. Between classes, jobs, extracurriculars, leadership positions and trying to maintain some semblance of a social life, there are never enough hours in the day. AI makes things easier. It can generate an outline, rewrite a paragraph, summarize a reading or produce an entire essay before you have even finished your Celsius. But convenience does not necessarily facilitate education. [...] There is also something to be said about individuality. AI can generate an argument, imitate a writing style or suggest a creative direction, but our perspectives are developed through our own experiences, disagreements, mistakes and interpretations. The things that make our voices interesting are often the very things that cannot be neatly generated from a prompt. If we constantly rely on the same tools to tell us what to think and how to express it, we risk losing the differences that make [...] I am not asking anyone to abandon AI. I use it, and I recognize the benefits it provides. But I do think we need to become more conscientious about when we use it and what we are asking it to do for us. Let it help with the tedious tasks. Let it serve as a resource. But do not let it become a substitute for your own intellectual development.",
+                    "score": 0.4031679
+                  },
+                  {
+                    "title": "‘AI rebounding’: Nearly 20% of U.S. workers replaced by AI are being asked back | Fortune",
+                    "url": "https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security",
+                    "source": "fortune.com",
+                    "summary": "Ford also hired and promoted 350 experienced engineers in June after AI-powered quality control tools failed to perform as expected. The automaker said AI had contributed to quality improvements but emphasized the importance of combining the tech with experienced engineering teams. [...] “Organizations are making fast, sometimes myopic, decisions about their people based on an incomplete picture of what their employees can do with or without AI,” Lucy Beaumont, global senior vice president of product and design at SHL, said in a press release. “AI rebounding is what happens when a company automates a role before it has genuinely assessed the human capability inside it. The AI doesn’t deliver, the gap becomes obvious, and the business ends up rehiring the same experts they just [...] Fortune Daily breaks the traditional barrier between audience and newsroom. The show transforms Fortune’s trusted reporting into actionable, conversational, and entertaining insights for an emerging class of business leaders. Watch here.\n\nAbout the Author\n\nBy Joshua HongNews Fellow\n\nJoshua Hong is a News Fellow at Fortune covering data, AI, cybersecurity, energy, and retail.\n\nSee full bio\n\nAdd Fortune on Google for similar content.\n\nLatest in AI\n\n---\n\nMost Popular\n\n---\n\nRecommended For You",
+                    "score": 0.2654493
+                  },
+                  {
+                    "title": "Congress’s Permitting Bill Is a ‘Massive Giveaway’ to the AI Data Center Industry, Critics Warn",
+                    "url": "https://time.com/article/2026/11/10/permitting-bill-data-centers",
+                    "source": "time.com",
+                    "summary": "Personalized Content\n\n## Business\n\nFollow this section to personalize your feed and get instant alerts.\n\nWHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\nPersonalized Content\n\n## AI\n\nFollow this tag to personalize your feed and get instant alerts.\n\nWHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\n# Congress’s Permitting Bill Is a ‘Massive Giveaway’ to the AI Data Center Industry, Critics Warn\n\nAndrew R. Chow\n\nPersonalized Content\n\nAndrew R. Chow\n\n## Andrew R. Chow [...] The bill’s advocates argue that its passage would serve as a rare bipartisan win and a victory for affordability. But critics, especially those on the left, are calling for Democrats to wait until the next Congress. “You just heard Americans demand much more of a say in a way that AI is shaping their lives,” says Michele Jawando, the CEO of Omidyar Network. “Whenever you try to ram something through in a lame duck Congress before you have a hundred new House members, that’s never a good look [...] WHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\nCorrespondent\n\nNarrated by TIME AI.",
+                    "score": 0.19392508
+                  },
+                  {
+                    "title": "Military-made AI tool helped thwart World Cup bomb threat - Federal News Network",
+                    "url": "https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat",
+                    "source": "federalnewsnetwork.com",
+                    "summary": "The 2026 World Cup brought more than six million spectators from around the world to more than 100 matches in 16 host cities in the U.S., Canada and Mexico over the course of two months, prompting a massive interagency effort to secure those sites using technologies like AI and drones. Two people were charged in connection with another bomb threat against FIFA during a World Cup match at MetLife Stadium in New Jersey. [...] A military-made artificial intelligence tool helped law enforcement thwart a bomb threat at the FIFA World Cup in California this summer.\n\nThe previously undisclosed incident occurred June 18, when Switzerland faced Bosnia and Herzegovina at SoFi Stadium outside Los Angeles, Army Capt. Ryan Hetrick, who leads the Pentagon’s Generative AI Task Force, said Nov. 6 at an AI event in Washington. [...] Hetrick has become one of the military’s biggest — and busiest — evangelists for AI. The GenAI Task Force travels around the globe to sit down with troops on operations floors and in the field and find AI fixes for their most pressing problems.",
+                    "score": 0.19305643
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "format",
+              "args": {
+                "template": "daily_ai_vn",
+                "items": [
+                  {
+                    "section": "Thị trường lao động & Việc làm",
+                    "title": "Gần 20% nhân sự bị thay thế bởi AI đang được tuyển dụng trở lại",
+                    "summary": "Xu hướng 'AI rebounding': Khoảng 20% công ty Mỹ từng sa thải nhân sự để thay thế bằng AI đang phải khôi phục lại các vị trí hoặc tuyển lại nhân sự chuyên gia do AI không đạt hiệu quả như kỳ vọng khi thiếu sự giám sát của con người.",
+                    "url": "https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security",
+                    "source": "Fortune"
+                  },
+                  {
+                    "source": "FOX 10 TV",
+                    "section": "Thị trường lao động & Việc làm",
+                    "url": "https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity",
+                    "title": "AI đối với việc làm: Thách thức hay Cơ hội?",
+                    "summary": "Các chuyên gia đánh giá AI vừa là mối đe dọa với các công việc lặp đi lặp lại như nhập dữ liệu, tư vấn viên, vừa mở ra cơ hội việc làm mới trong mảng hạ tầng dữ liệu và sản xuất chip."
+                  },
+                  {
+                    "source": "TIME",
+                    "url": "https://time.com/article/2026/11/10/permitting-bill-data-centers",
+                    "section": "Chính sách & Hạ tầng",
+                    "title": "Tranh cãi về dự luật cấp phép trung tâm dữ liệu AI tại Quốc hội Mỹ",
+                    "summary": "Dự luật mới tại Quốc hội Mỹ thúc đẩy cấp phép nhanh cho hạ tầng trung tâm dữ liệu AI đang vấp phải nhiều ý kiến trái chiều từ giới phân tích và các tổ chức xã hội."
+                  },
+                  {
+                    "title": "Ứng dụng AI quân sự hỗ trợ tháo gỡ đe dọa an ninh tại World Cup",
+                    "url": "https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat",
+                    "source": "Federal News Network",
+                    "section": "An ninh & Quốc phòng",
+                    "summary": "Quân đội Mỹ tiết lộ công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng tháo gỡ thành công đe dọa đe dọa an ninh tại Giải vô địch bóng đá thế giới World Cup."
+                  }
+                ],
+                "headline": "Tin tức AI nổi bật hôm nay"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "format",
+              "args": {
+                "template": "daily_ai_vn",
+                "items": [
+                  {
+                    "section": "Thị trường lao động & Việc làm",
+                    "title": "Gần 20% nhân sự bị thay thế bởi AI đang được tuyển dụng trở lại",
+                    "summary": "Xu hướng 'AI rebounding': Khoảng 20% công ty Mỹ từng sa thải nhân sự để thay thế bằng AI đang phải khôi phục lại các vị trí hoặc tuyển lại nhân sự chuyên gia do AI không đạt hiệu quả như kỳ vọng khi thiếu sự giám sát của con người.",
+                    "url": "https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security",
+                    "source": "Fortune"
+                  },
+                  {
+                    "source": "FOX 10 TV",
+                    "section": "Thị trường lao động & Việc làm",
+                    "url": "https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity",
+                    "title": "AI đối với việc làm: Thách thức hay Cơ hội?",
+                    "summary": "Các chuyên gia đánh giá AI vừa là mối đe dọa với các công việc lặp đi lặp lại như nhập dữ liệu, tư vấn viên, vừa mở ra cơ hội việc làm mới trong mảng hạ tầng dữ liệu và sản xuất chip."
+                  },
+                  {
+                    "source": "TIME",
+                    "url": "https://time.com/article/2026/11/10/permitting-bill-data-centers",
+                    "section": "Chính sách & Hạ tầng",
+                    "title": "Tranh cãi về dự luật cấp phép trung tâm dữ liệu AI tại Quốc hội Mỹ",
+                    "summary": "Dự luật mới tại Quốc hội Mỹ thúc đẩy cấp phép nhanh cho hạ tầng trung tâm dữ liệu AI đang vấp phải nhiều ý kiến trái chiều từ giới phân tích và các tổ chức xã hội."
+                  },
+                  {
+                    "title": "Ứng dụng AI quân sự hỗ trợ tháo gỡ đe dọa an ninh tại World Cup",
+                    "url": "https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat",
+                    "source": "Federal News Network",
+                    "section": "An ninh & Quốc phòng",
+                    "summary": "Quân đội Mỹ tiết lộ công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng tháo gỡ thành công đe dọa đe dọa an ninh tại Giải vô địch bóng đá thế giới World Cup."
+                  }
+                ],
+                "headline": "Tin tức AI nổi bật hôm nay"
+              },
+              "result": {
+                "tool": "render_digest",
+                "template": "daily_ai_vn",
+                "markdown": "**Tin tức AI nổi bật hôm nay**\n\n**Thị trường lao động & Việc làm**\n- Xu hướng 'AI rebounding': Khoảng 20% công ty Mỹ từng sa thải nhân sự để thay thế bằng AI đang phải khôi phục lại các vị trí hoặc tuyển lại nhân sự chuyên gia do AI không đạt hiệu quả như kỳ vọng khi thiếu sự giám sát của con người. - [Fortune](https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security)\n- Các chuyên gia đánh giá AI vừa là mối đe dọa với các công việc lặp đi lặp lại như nhập dữ liệu, tư vấn viên, vừa mở ra cơ hội việc làm mới trong mảng hạ tầng dữ liệu và sản xuất chip. - [FOX 10 TV](https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity)\n\n**Chính sách & Hạ tầng**\n- Dự luật mới tại Quốc hội Mỹ thúc đẩy cấp phép nhanh cho hạ tầng trung tâm dữ liệu AI đang vấp phải nhiều ý kiến trái chiều từ giới phân tích và các tổ chức xã hội. - [TIME](https://time.com/article/2026/11/10/permitting-bill-data-centers)\n\n**An ninh & Quốc phòng**\n- Quân đội Mỹ tiết lộ công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng tháo gỡ thành công đe dọa đe dọa an ninh tại Giải vô địch bóng đá thế giới World Cup. - [Federal News Network](https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat)\n",
+                "item_count": 4
+              }
+            }
+          ]
+        },
+        {
+          "round": 3,
+          "assistant_text": "**Tin tức AI nổi bật hôm nay**\n\n**Thị trường lao động & Việc làm**\n- **Xu hướng \"AI rebounding\":** Gần 20% doanh nghiệp Mỹ từng thay thế nhân sự bằng AI đang phải tuyển dụng trở lại các chuyên gia. Lý do là các công cụ AI không đạt hiệu quả như kỳ vọng khi thiếu đi sự giám sát và năng lực chuyên môn của con người. — [Fortune](https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security)\n- **Tác động hai mặt của AI:** Giới chuyên gia nhận định AI đang gây áp lực lên các công việc mang tính lặp đi lặp lại (như nhập liệu, viết nội dung cơ bản, tổng đài), nhưng đồng thời mở ra nhiều cơ hội việc làm mới trong mảng xây dựng hạ tầng dữ liệu và sản xuất chip bán dẫn. — [FOX 10 TV](https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity)\n\n**Chính sách & Hạ tầng**\n- **Tranh cãi về dự luật trung tâm dữ liệu AI:** Dự luật mới tại Quốc hội Mỹ nhằm đẩy nhanh quá trình cấp phép cho các trung tâm dữ liệu AI đang gặp phải phản ứng trái chiều từ giới phân tích và các tổ chức xã hội do lo ngại về tác động môi trường và tính minh bạch. — [TIME](https://time.com/article/2026/11/10/permitting-bill-data-centers)\n\n**An ninh & Quốc phòng**\n- **AI hỗ trợ đảm bảo an ninh tại World Cup:** Quân đội Mỹ vừa công bố thông tin công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng phát hiện và tháo gỡ kịp thời mối đe dọa an ninh tại giải đấu World Cup. — [Federal News Network](https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat)",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "lookup",
+          "args": {
+            "timeframe": "day",
+            "topic": "news",
+            "query": "AI"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "AI",
+            "topic": "news",
+            "timeframe": "day",
+            "items": [
+              {
+                "title": "AI and your job: Threat or opportunity?",
+                "url": "https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity",
+                "source": "fox10tv.com",
+                "summary": "MOBILE, Ala. (WALA) - Artificial intelligence is becoming a bigger part of everyday life, raising questions about what the technology could mean for workers and their jobs.\n\nSome economists believe AI poses a particular threat to entry-level and repetitive work, including call center, data entry and junior copywriting jobs, according to The Wall Street Journal. Those tasks may be easier to automate. [...] But AI could also create opportunities. A Bloomberg article points to potential job growth in construction and manufacturing as companies build data centers and produce the chips that power the technology. Some higher-skilled office workers could also benefit if AI helps them become more productive. [...] The long-term impact on jobs remains unclear, but workers can take steps to prepare. Exploring AI chatbots, writing assistants and other tools may help people find ways to work more efficiently and develop skills that complement the technology.",
+                "score": 0.42348245
+              },
+              {
+                "title": "Opinion: AI cannot replace being human – The Battalion",
+                "url": "https://thebatt.com/opinion/opinion-ai-cannot-replace-being-human",
+                "source": "thebatt.com",
+                "summary": "I understand the appeal. College is busy. Between classes, jobs, extracurriculars, leadership positions and trying to maintain some semblance of a social life, there are never enough hours in the day. AI makes things easier. It can generate an outline, rewrite a paragraph, summarize a reading or produce an entire essay before you have even finished your Celsius. But convenience does not necessarily facilitate education. [...] There is also something to be said about individuality. AI can generate an argument, imitate a writing style or suggest a creative direction, but our perspectives are developed through our own experiences, disagreements, mistakes and interpretations. The things that make our voices interesting are often the very things that cannot be neatly generated from a prompt. If we constantly rely on the same tools to tell us what to think and how to express it, we risk losing the differences that make [...] I am not asking anyone to abandon AI. I use it, and I recognize the benefits it provides. But I do think we need to become more conscientious about when we use it and what we are asking it to do for us. Let it help with the tedious tasks. Let it serve as a resource. But do not let it become a substitute for your own intellectual development.",
+                "score": 0.4031679
+              },
+              {
+                "title": "‘AI rebounding’: Nearly 20% of U.S. workers replaced by AI are being asked back | Fortune",
+                "url": "https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security",
+                "source": "fortune.com",
+                "summary": "Ford also hired and promoted 350 experienced engineers in June after AI-powered quality control tools failed to perform as expected. The automaker said AI had contributed to quality improvements but emphasized the importance of combining the tech with experienced engineering teams. [...] “Organizations are making fast, sometimes myopic, decisions about their people based on an incomplete picture of what their employees can do with or without AI,” Lucy Beaumont, global senior vice president of product and design at SHL, said in a press release. “AI rebounding is what happens when a company automates a role before it has genuinely assessed the human capability inside it. The AI doesn’t deliver, the gap becomes obvious, and the business ends up rehiring the same experts they just [...] Fortune Daily breaks the traditional barrier between audience and newsroom. The show transforms Fortune’s trusted reporting into actionable, conversational, and entertaining insights for an emerging class of business leaders. Watch here.\n\nAbout the Author\n\nBy Joshua HongNews Fellow\n\nJoshua Hong is a News Fellow at Fortune covering data, AI, cybersecurity, energy, and retail.\n\nSee full bio\n\nAdd Fortune on Google for similar content.\n\nLatest in AI\n\n---\n\nMost Popular\n\n---\n\nRecommended For You",
+                "score": 0.2654493
+              },
+              {
+                "title": "Congress’s Permitting Bill Is a ‘Massive Giveaway’ to the AI Data Center Industry, Critics Warn",
+                "url": "https://time.com/article/2026/11/10/permitting-bill-data-centers",
+                "source": "time.com",
+                "summary": "Personalized Content\n\n## Business\n\nFollow this section to personalize your feed and get instant alerts.\n\nWHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\nPersonalized Content\n\n## AI\n\nFollow this tag to personalize your feed and get instant alerts.\n\nWHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\n# Congress’s Permitting Bill Is a ‘Massive Giveaway’ to the AI Data Center Industry, Critics Warn\n\nAndrew R. Chow\n\nPersonalized Content\n\nAndrew R. Chow\n\n## Andrew R. Chow [...] The bill’s advocates argue that its passage would serve as a rare bipartisan win and a victory for affordability. But critics, especially those on the left, are calling for Democrats to wait until the next Congress. “You just heard Americans demand much more of a say in a way that AI is shaping their lives,” says Michele Jawando, the CEO of Omidyar Network. “Whenever you try to ram something through in a lame duck Congress before you have a hundred new House members, that’s never a good look [...] WHY FOLLOW?\n\nUpdate your preferences in Account Settings\n\nCorrespondent\n\nNarrated by TIME AI.",
+                "score": 0.19392508
+              },
+              {
+                "title": "Military-made AI tool helped thwart World Cup bomb threat - Federal News Network",
+                "url": "https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat",
+                "source": "federalnewsnetwork.com",
+                "summary": "The 2026 World Cup brought more than six million spectators from around the world to more than 100 matches in 16 host cities in the U.S., Canada and Mexico over the course of two months, prompting a massive interagency effort to secure those sites using technologies like AI and drones. Two people were charged in connection with another bomb threat against FIFA during a World Cup match at MetLife Stadium in New Jersey. [...] A military-made artificial intelligence tool helped law enforcement thwart a bomb threat at the FIFA World Cup in California this summer.\n\nThe previously undisclosed incident occurred June 18, when Switzerland faced Bosnia and Herzegovina at SoFi Stadium outside Los Angeles, Army Capt. Ryan Hetrick, who leads the Pentagon’s Generative AI Task Force, said Nov. 6 at an AI event in Washington. [...] Hetrick has become one of the military’s biggest — and busiest — evangelists for AI. The GenAI Task Force travels around the globe to sit down with troops on operations floors and in the field and find AI fixes for their most pressing problems.",
+                "score": 0.19305643
+              }
+            ]
+          }
+        },
+        {
+          "tool": "format",
+          "args": {
+            "template": "daily_ai_vn",
+            "items": [
+              {
+                "section": "Thị trường lao động & Việc làm",
+                "title": "Gần 20% nhân sự bị thay thế bởi AI đang được tuyển dụng trở lại",
+                "summary": "Xu hướng 'AI rebounding': Khoảng 20% công ty Mỹ từng sa thải nhân sự để thay thế bằng AI đang phải khôi phục lại các vị trí hoặc tuyển lại nhân sự chuyên gia do AI không đạt hiệu quả như kỳ vọng khi thiếu sự giám sát của con người.",
+                "url": "https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security",
+                "source": "Fortune"
+              },
+              {
+                "source": "FOX 10 TV",
+                "section": "Thị trường lao động & Việc làm",
+                "url": "https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity",
+                "title": "AI đối với việc làm: Thách thức hay Cơ hội?",
+                "summary": "Các chuyên gia đánh giá AI vừa là mối đe dọa với các công việc lặp đi lặp lại như nhập dữ liệu, tư vấn viên, vừa mở ra cơ hội việc làm mới trong mảng hạ tầng dữ liệu và sản xuất chip."
+              },
+              {
+                "source": "TIME",
+                "url": "https://time.com/article/2026/11/10/permitting-bill-data-centers",
+                "section": "Chính sách & Hạ tầng",
+                "title": "Tranh cãi về dự luật cấp phép trung tâm dữ liệu AI tại Quốc hội Mỹ",
+                "summary": "Dự luật mới tại Quốc hội Mỹ thúc đẩy cấp phép nhanh cho hạ tầng trung tâm dữ liệu AI đang vấp phải nhiều ý kiến trái chiều từ giới phân tích và các tổ chức xã hội."
+              },
+              {
+                "title": "Ứng dụng AI quân sự hỗ trợ tháo gỡ đe dọa an ninh tại World Cup",
+                "url": "https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat",
+                "source": "Federal News Network",
+                "section": "An ninh & Quốc phòng",
+                "summary": "Quân đội Mỹ tiết lộ công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng tháo gỡ thành công đe dọa đe dọa an ninh tại Giải vô địch bóng đá thế giới World Cup."
+              }
+            ],
+            "headline": "Tin tức AI nổi bật hôm nay"
+          },
+          "result": {
+            "tool": "render_digest",
+            "template": "daily_ai_vn",
+            "markdown": "**Tin tức AI nổi bật hôm nay**\n\n**Thị trường lao động & Việc làm**\n- Xu hướng 'AI rebounding': Khoảng 20% công ty Mỹ từng sa thải nhân sự để thay thế bằng AI đang phải khôi phục lại các vị trí hoặc tuyển lại nhân sự chuyên gia do AI không đạt hiệu quả như kỳ vọng khi thiếu sự giám sát của con người. - [Fortune](https://fortune.com/2026/11/09/ai-rebounding-20-us-workers-replaced-higher-pay-job-security)\n- Các chuyên gia đánh giá AI vừa là mối đe dọa với các công việc lặp đi lặp lại như nhập dữ liệu, tư vấn viên, vừa mở ra cơ hội việc làm mới trong mảng hạ tầng dữ liệu và sản xuất chip. - [FOX 10 TV](https://www.fox10tv.com/2026/11/10/ai-your-job-threat-or-opportunity)\n\n**Chính sách & Hạ tầng**\n- Dự luật mới tại Quốc hội Mỹ thúc đẩy cấp phép nhanh cho hạ tầng trung tâm dữ liệu AI đang vấp phải nhiều ý kiến trái chiều từ giới phân tích và các tổ chức xã hội. - [TIME](https://time.com/article/2026/11/10/permitting-bill-data-centers)\n\n**An ninh & Quốc phòng**\n- Quân đội Mỹ tiết lộ công cụ Generative AI do lực lượng này phát triển đã hỗ trợ cơ quan chức năng tháo gỡ thành công đe dọa đe dọa an ninh tại Giải vô địch bóng đá thế giới World Cup. - [Federal News Network](https://federalnewsnetwork.com/artificial-intelligence/2026/11/military-made-ai-tool-helped-thwart-world-cup-bomb-threat)\n",
+            "item_count": 4
+          }
+        }
+      ],
+      "ended_at": "2026-11-10T12:46:11"
+    }
+  ]
+}

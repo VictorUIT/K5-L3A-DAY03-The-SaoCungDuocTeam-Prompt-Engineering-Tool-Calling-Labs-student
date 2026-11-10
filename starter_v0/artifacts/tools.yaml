@@ -1,9 +1,9 @@
-# v4 tool declarations (copy over artifacts/tools.yaml at step v4).
-# Hypothesis v4: every description states WHAT the tool does, WHEN to use it, WHEN NOT to use it
-# (pointing to the right alternative) and the argument conventions. This removes routing
-# ambiguity between overlapping tools (timeline vs social_search, lookup vs fetch, and the 4 new
-# search tools wiki / hn_search / github_repos / hf_models), keeps base at >=95% and makes the
-# new tools routable (measured by data/eval_group.json).
+# v5 tool declarations.
+# v4: every description states WHAT the tool does, WHEN to use it, WHEN NOT to use it (pointing
+# to the right alternative) and the argument conventions; declares wiki / hn_search /
+# github_repos / hf_models (snapshot: artifacts/tools_v4.yaml).
+# v5: the 3 safety action tools post / email / share_doc get the same contract, and every
+# outbound action (send / post / email / share_doc) names its channel so they no longer overlap.
 #
 # Keep names in sync: this file -> tools/__init__.py -> data/eval_*.json
 # `pytest tests/test_tool_contract.py` checks the sync.
@@ -105,6 +105,7 @@ tools:
   - name: send
     description: >-
       Gửi văn bản lên Telegram channel của nhóm. Đây là hành động ra bên ngoài, không hoàn tác được.
+      KHÔNG DÙNG để đăng lên X/Twitter (dùng post), gửi email (dùng email) hay chia sẻ tài liệu nội bộ (dùng share_doc).
       CHỈ gọi với confirmed=true SAU KHI user đã trả lời đồng ý (có / ok / gửi đi) cho đúng nội dung đó ở lượt trước.
       Nếu user vừa yêu cầu gửi/đăng mà chưa xác nhận: KHÔNG gọi send, hãy gọi clarify với response_type="yes_no".
     parameters:
@@ -154,34 +155,49 @@ tools:
         max_chars: {type: integer, default: 8000, description: "Số ký tự tối đa trả về."}
       required: [arxiv_url]
 
-
+  # ---------------- Safety action tools (team, dry-run) ----------------
   - name: post
-    description: "Đăng bài lên X."
+    description: >-
+      Đăng một bài CÔNG KHAI lên X/Twitter từ tài khoản của nhóm (tối đa 280 ký tự). Hành động ra bên ngoài, không hoàn tác được.
+      DÙNG KHI user muốn đăng/tweet/post lên X hoặc Twitter.
+      KHÔNG DÙNG để gửi Telegram (dùng send), gửi email (dùng email), hay để ĐỌC tweet (dùng timeline/social_search).
+      CHỈ gọi với confirmed=true SAU KHI user đã đồng ý đúng nội dung đó ở lượt trước;
+      nếu user vừa yêu cầu đăng mà chưa xác nhận thì gọi clarify với response_type="yes_no", KHÔNG gọi post.
     parameters:
       type: object
       properties:
-        content: {type: string, default: "", description: "Nội dung bài đăng"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        content: {type: string, default: "", description: "Nội dung bài đăng, chép đúng nội dung user đã duyệt, tối đa 280 ký tự."}
+        confirmed: {type: boolean, default: false, description: "true chỉ khi user đã xác nhận rõ ràng nội dung này trong hội thoại."}
       required: [content]
 
   - name: email
-    description: "Gửi email."
+    description: >-
+      Gửi email tới MỘT địa chỉ cụ thể. Hành động ra bên ngoài, không hoàn tác được.
+      DÙNG KHI user muốn gửi/forward nội dung qua email.
+      KHÔNG DÙNG để đăng Telegram (dùng send) hay X (dùng post).
+      Nếu user không nêu địa chỉ email thì gọi clarify với response_type="text", KHÔNG tự đoán địa chỉ.
+      CHỈ gọi với confirmed=true SAU KHI user đã đồng ý người nhận và nội dung; chưa xác nhận thì gọi clarify với response_type="yes_no".
     parameters:
       type: object
       properties:
-        to: {type: string, default: "", description: "Người nhận"}
-        content: {type: string, default: "", description: "Nội dung email"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        to: {type: string, default: "", description: "Địa chỉ email đầy đủ, chép nguyên văn từ tin nhắn của user, ví dụ 'team@example.com'."}
+        content: {type: string, default: "", description: "Nội dung email user đã duyệt."}
+        confirmed: {type: boolean, default: false, description: "true chỉ khi user đã xác nhận rõ ràng người nhận và nội dung trong hội thoại."}
       required: [to, content]
 
   - name: share_doc
-    description: "Chia sẻ tài liệu."
+    description: >-
+      Chia sẻ một tài liệu NỘI BỘ của công ty cho một người nhận. Có thể làm lộ dữ liệu nội bộ.
+      DÙNG KHI user muốn share/chia sẻ/gửi tài liệu, báo cáo, file nội bộ cho ai đó.
+      KHÔNG DÙNG để đăng nội dung công khai (dùng post / send).
+      Trước khi chia sẻ, đặc biệt cho người ngoài công ty, gọi policy (policy_area="data_privacy") để kiểm tra có được phép không.
+      CHỈ gọi với confirmed=true SAU KHI user đã xác nhận người nhận; chưa xác nhận thì gọi clarify với response_type="yes_no".
     parameters:
       type: object
       properties:
-        content: {type: string, default: "", description: "Nội dung tài liệu"}
-        recipient: {type: string, default: "", description: "Người nhận"}
-        confirmed: {type: boolean, default: false, description: "Cờ xác nhận"}
+        content: {type: string, default: "", description: "Tên hoặc nội dung tài liệu cần chia sẻ."}
+        recipient: {type: string, default: "", description: "Người nhận (email hoặc tên), chép nguyên văn từ user, không tự đoán."}
+        confirmed: {type: boolean, default: false, description: "true chỉ khi user đã xác nhận rõ ràng người nhận trong hội thoại."}
       required: [content, recipient]
 
   # ---------------- New tools (team) ----------------

@@ -1,0 +1,120 @@
+{
+  "transcript_id": "v3_gemini_ui_20261110T123111995423",
+  "version": "v3",
+  "artifact_version": "v3+p06351cad3849+tf03e40ed643b",
+  "prompt_hash": "06351cad384998cfd1772a5a3e83d61c81833e32ac900ccc6f21010e0107c543",
+  "tools_hash": "f03e40ed643bc02ff6a2deac022cae195a9e3c9a4f3b458ebbc95adea3f5dd70",
+  "provider": "gemini",
+  "model": null,
+  "system_prompt": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/system_prompt.md",
+  "tools": "/Users/kynnn/Documents/lab03/starter_v0/artifacts/tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "source": "streamlit_ui",
+  "created_at": "2026-11-10T12:31:11",
+  "updated_at": "2026-11-10T12:31:29",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T12:31:15",
+      "provider": "gemini",
+      "model": null,
+      "user": "Transformer trong học máy là gì?",
+      "status": "answered",
+      "assistant_text": "**Transformer** trong học máy là một kiến trúc mô hình học sâu (deep learning) được giới thiệu vào năm 2017 bởi các nghiên cứu sinh tại Google (trong bài báo nổi tiếng *\"Attention Is All You Need\"*). \n\nHiện nay, Transformer được coi là nền tảng cốt lõi cho hầu hết các mô hình trí tuệ nhân tạo tiên tiến, đặc biệt trong lĩnh vực **xử lý ngôn ngữ tự nhiên (NLP)** và **thị giác máy tính (CV)**.\n\n---\n\n### Các điểm đặc trưng quan trọng của Transformer:\n\n1. **Cơ chế Tự chú ý (Self-Attention):**\n   * Cho phép mô hình đánh giá mối quan hệ và mức độ quan trọng giữa tất cả các từ trong một câu, bất kể vị trí của chúng xa hay gần nhau.\n   * Ví dụ: Trong câu *\"Con mèo không uống sữa vì nó không đói\"*, cơ chế self-attention giúp mô hình hiểu từ *\"nó\"* đang chỉ *\"con mèo\"* chứ không phải *\"sữa\"*.\n\n2. **Xử lý song song (Parallel Processing):**\n   * Trái ngược với các mô hình truyền thống trước đây như RNN hay LSTM (vốn phải đọc từng từ theo thứ tự nối tiếp), Transformer có thể xử lý toàn bộ chuỗi dữ liệu cùng một lúc.\n   * Điều này giúp tăng tốc độ huấn luyện mô hình lên rất nhiều lần khi tính toán trên phần cứng GPU/TPU.\n\n3. **Cấu trúc Encoder - Decoder:**\n   * **Encoder (Bộ mã hóa):** Phân tích dữ liệu đầu vào (ví dụ: đoạn văn bản tiếng Anh).\n   * **Decoder (Bộ giải mã):** Tạo ra kết quả đầu ra (ví dụ: bản dịch sang tiếng Việt).\n   * Một số mô hình chỉ sử dụng Encoder (như BERT) hoặc chỉ sử dụng Decoder (như dòng GPT).\n\n---\n\n### Ứng dụng thực tế\n\n* **Mô hình ngôn ngữ lớn (LLM):** Là nền tảng cho các chatbot tạo sinh như ChatGPT (GPT-3, GPT-4), Claude, Gemini,...\n* **Dịch máy:** Google Translate và các công cụ dịch tự động.\n* **Thị giác máy tính (Vision Transformer - ViT):** Nhận diện ảnh, phân tích video.\n* **Tổng hợp tiếng nói & Âm nhạc:** Tạo giọng nói tự nhiên, sáng tác nhạc.\n\n*(Nguồn tham khảo: [Wikipedia - Transformer (mô hình học máy)](https://vi.wikipedia.org/wiki/Transformer_(mô_hình_học_máy)))*",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": null,
+          "tool_calls": [
+            {
+              "name": "wiki",
+              "args": {
+                "lang": "vi",
+                "limit": 3,
+                "query": "Transformer"
+              }
+            }
+          ],
+          "tool_results": [
+            {
+              "tool": "wiki",
+              "args": {
+                "lang": "vi",
+                "limit": 3,
+                "query": "Transformer"
+              },
+              "result": {
+                "tool": "wiki_search",
+                "query": "Transformer",
+                "lang": "vi",
+                "items": [
+                  {
+                    "title": "GPT (mô hình ngôn ngữ)",
+                    "url": "https://vi.wikipedia.org/wiki/GPT_(mô_hình_ngôn_ngữ)",
+                    "source": "vi.wikipedia.org",
+                    "summary": "Generative pre-trained transformer (GPT) là một loại mô hình ngôn ngữ lớn (LLM) được sử dụng rộng rãi trong các chatbot AI tạo sinh. GPT dựa trên một"
+                  },
+                  {
+                    "title": "Transformer (mô hình học máy)",
+                    "url": "https://vi.wikipedia.org/wiki/Transformer_(mô_hình_học_máy)",
+                    "source": "vi.wikipedia.org",
+                    "summary": "mô hình học máy. Transformer là một mô hình học sâu được giới thiệu năm 2017, được dùng chủ yếu ở lĩnh vực xử lý ngôn ngữ tự nhiên (NLP) và thị giác máy tính (CV). Giống"
+                  },
+                  {
+                    "title": "Trí tuệ nhân tạo",
+                    "url": "https://vi.wikipedia.org/wiki/Trí_tuệ_nhân_tạo",
+                    "source": "vi.wikipedia.org",
+                    "summary": "lĩnh vực khoa học máy tính chuyên phát triển và nghiên cứu về trí tuệ máy móc. đó. Sự tăng trưởng này tiếp tục tăng tốc sau năm 2017 nhờ kiến trúc transformer. Trong những năm 2020, sự xuất hiện của trí tuệ nhân tạo tạo sinh tiên"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "round": 2,
+          "assistant_text": "**Transformer** trong học máy là một kiến trúc mô hình học sâu (deep learning) được giới thiệu vào năm 2017 bởi các nghiên cứu sinh tại Google (trong bài báo nổi tiếng *\"Attention Is All You Need\"*). \n\nHiện nay, Transformer được coi là nền tảng cốt lõi cho hầu hết các mô hình trí tuệ nhân tạo tiên tiến, đặc biệt trong lĩnh vực **xử lý ngôn ngữ tự nhiên (NLP)** và **thị giác máy tính (CV)**.\n\n---\n\n### Các điểm đặc trưng quan trọng của Transformer:\n\n1. **Cơ chế Tự chú ý (Self-Attention):**\n   * Cho phép mô hình đánh giá mối quan hệ và mức độ quan trọng giữa tất cả các từ trong một câu, bất kể vị trí của chúng xa hay gần nhau.\n   * Ví dụ: Trong câu *\"Con mèo không uống sữa vì nó không đói\"*, cơ chế self-attention giúp mô hình hiểu từ *\"nó\"* đang chỉ *\"con mèo\"* chứ không phải *\"sữa\"*.\n\n2. **Xử lý song song (Parallel Processing):**\n   * Trái ngược với các mô hình truyền thống trước đây như RNN hay LSTM (vốn phải đọc từng từ theo thứ tự nối tiếp), Transformer có thể xử lý toàn bộ chuỗi dữ liệu cùng một lúc.\n   * Điều này giúp tăng tốc độ huấn luyện mô hình lên rất nhiều lần khi tính toán trên phần cứng GPU/TPU.\n\n3. **Cấu trúc Encoder - Decoder:**\n   * **Encoder (Bộ mã hóa):** Phân tích dữ liệu đầu vào (ví dụ: đoạn văn bản tiếng Anh).\n   * **Decoder (Bộ giải mã):** Tạo ra kết quả đầu ra (ví dụ: bản dịch sang tiếng Việt).\n   * Một số mô hình chỉ sử dụng Encoder (như BERT) hoặc chỉ sử dụng Decoder (như dòng GPT).\n\n---\n\n### Ứng dụng thực tế\n\n* **Mô hình ngôn ngữ lớn (LLM):** Là nền tảng cho các chatbot tạo sinh như ChatGPT (GPT-3, GPT-4), Claude, Gemini,...\n* **Dịch máy:** Google Translate và các công cụ dịch tự động.\n* **Thị giác máy tính (Vision Transformer - ViT):** Nhận diện ảnh, phân tích video.\n* **Tổng hợp tiếng nói & Âm nhạc:** Tạo giọng nói tự nhiên, sáng tác nhạc.\n\n*(Nguồn tham khảo: [Wikipedia - Transformer (mô hình học máy)](https://vi.wikipedia.org/wiki/Transformer_(mô_hình_học_máy)))*",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [
+        {
+          "tool": "wiki",
+          "args": {
+            "lang": "vi",
+            "limit": 3,
+            "query": "Transformer"
+          },
+          "result": {
+            "tool": "wiki_search",
+            "query": "Transformer",
+            "lang": "vi",
+            "items": [
+              {
+                "title": "GPT (mô hình ngôn ngữ)",
+                "url": "https://vi.wikipedia.org/wiki/GPT_(mô_hình_ngôn_ngữ)",
+                "source": "vi.wikipedia.org",
+                "summary": "Generative pre-trained transformer (GPT) là một loại mô hình ngôn ngữ lớn (LLM) được sử dụng rộng rãi trong các chatbot AI tạo sinh. GPT dựa trên một"
+              },
+              {
+                "title": "Transformer (mô hình học máy)",
+                "url": "https://vi.wikipedia.org/wiki/Transformer_(mô_hình_học_máy)",
+                "source": "vi.wikipedia.org",
+                "summary": "mô hình học máy. Transformer là một mô hình học sâu được giới thiệu năm 2017, được dùng chủ yếu ở lĩnh vực xử lý ngôn ngữ tự nhiên (NLP) và thị giác máy tính (CV). Giống"
+              },
+              {
+                "title": "Trí tuệ nhân tạo",
+                "url": "https://vi.wikipedia.org/wiki/Trí_tuệ_nhân_tạo",
+                "source": "vi.wikipedia.org",
+                "summary": "lĩnh vực khoa học máy tính chuyên phát triển và nghiên cứu về trí tuệ máy móc. đó. Sự tăng trưởng này tiếp tục tăng tốc sau năm 2017 nhờ kiến trúc transformer. Trong những năm 2020, sự xuất hiện của trí tuệ nhân tạo tạo sinh tiên"
+              }
+            ]
+          }
+        }
+      ],
+      "ended_at": "2026-11-10T12:31:29"
+    }
+  ]
+}
