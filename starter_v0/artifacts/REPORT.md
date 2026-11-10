@@ -201,5 +201,3 @@ Kém hơn: `gemini-3.5-flash` dùng bộ small chỉ đạt **36/38**, so với 
 
 **Khi nào nhóm sẽ chọn model local (hoặc model nhỏ) thay vì cloud cho agent này?**
 Khi cần rẻ và nhanh với khối lượng lớn và đã có bộ eval để giữ chất lượng: sau tối ưu, 3.1-lite đạt 38/38, bằng model lớn. Với các hành động ra ngoài không hoàn tác được (`send`, `post`, `email`, `share_doc`), nhóm vẫn ưu tiên model lớn. Model local thật qua Ollama chỉ cần đến khi dữ liệu không được phép rời máy, và nhóm chưa đo phần này.
-
-**Lưu ý quan trọng:** các file `runs/v5-lite…`, `v6-lite…`, `v7-lite…`, `system_prompt_small.md`, `tools_small.yaml` hiện **chỉ có trong PR #4**. Nếu bạn chỉ dán đoạn văn này vào REPORT mà không merge PR #4, mọi đường dẫn trong bảng sẽ trỏ tới file không tồn tại trên `main`. Merge PR #4 là REPORT có sẵn B7 kèm bằng chứng, không cần dán tay.
