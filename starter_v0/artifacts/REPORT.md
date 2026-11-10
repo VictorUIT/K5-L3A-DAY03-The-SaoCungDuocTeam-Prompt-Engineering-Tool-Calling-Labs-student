@@ -8,10 +8,10 @@
 
 - Team: The SaoCungDuoc Team
 - Members: 
-2A202603625-Trần QuốcTuấn Khanh
-2A202603600-Nguyễn Văn Ngọc Sơn
-2A202603621-Đỗ Phương Nam
-2A202603590-Đỗ Đức Duẩn
+- 2A202603625 - Trần Quốc Tuấn Khanh
+- 2A202603600 - Nguyễn Văn Ngọc Sơn
+- 2A202603621 - Đỗ Phương Nam
+- 2A202603590 - Đỗ Đức Duẩn
 - Provider/model: Gemini-3.5 Flash
 
 ---
