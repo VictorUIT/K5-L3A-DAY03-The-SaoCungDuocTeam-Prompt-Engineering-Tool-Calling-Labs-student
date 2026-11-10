@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Research Agent</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f7fb; --panel: #ffffff; --ink: #1b1d29; --muted: #626679; --line: #e3e4ee;
+    --accent: #6366f1; --accent-ink: #ffffff; --accent-soft: rgba(99,102,241,.10);
+    --ok: #15803d; --ok-soft: #dcfce7; --warn: #b45309; --warn-soft: #fef3c7;
+    --bad: #b91c1c; --bad-soft: #fee2e2; --gray-soft: #eef0f5;
+    --user: #eef0ff; --code: #f3f4f8;
+    --base: 16px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12131a; --panel: #1b1d27; --ink: #ecedf3; --muted: #9a9db0; --line: #2c2f3d;
+      --accent: #818cf8; --accent-ink: #11121a; --accent-soft: rgba(129,140,248,.14);
+      --ok: #4ade80; --ok-soft: rgba(74,222,128,.14); --warn: #fbbf24; --warn-soft: rgba(251,191,36,.14);
+      --bad: #f87171; --bad-soft: rgba(248,113,113,.14); --gray-soft: #262938;
+      --user: #262a45; --code: #232634;
+      color-scheme: dark;
+    }
+  }
+  body.presentation { --base: 18px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: var(--base)/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+  .layout { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; }
+  aside { background: var(--panel); border-right: 1px solid var(--line); padding: 1.2rem 1rem; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  main { padding: 1.4rem clamp(1rem, 3vw, 2.4rem) 9rem; max-width: 1180px; width: 100%; }
+  h2.side { font-size: 1.05rem; margin: 0 0 .8rem; }
+  label.field { display: block; font-size: .85rem; color: var(--muted); margin: .7rem 0 .25rem; }
+  .input, select.input { width: 100%; padding: .5rem .65rem; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+  .input:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+  .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: .5rem .8rem; cursor: pointer; }
+  .btn:hover:not(:disabled) { border-color: var(--accent); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.block { width: 100%; margin-top: .6rem; }
+  .note { font-size: .82rem; color: var(--muted); }
+  .status { font-size: .85rem; padding: .5rem .7rem; border-radius: 10px; margin-top: .7rem; }
+  .status.ok { background: var(--ok-soft); color: var(--ok); }
+  .status.warn { background: var(--warn-soft); color: var(--warn); }
+  details.box { border: 1px solid var(--line); border-radius: 10px; padding: .4rem .7rem; margin-top: .8rem; }
+  details.box summary { cursor: pointer; font-size: .9rem; }
+  .toggle { display: flex; align-items: center; gap: .5rem; margin-top: .8rem; font-size: .9rem; cursor: pointer; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 1rem 0; }
+
+  .hero { padding: 1.1rem 1.4rem; border-radius: 16px; margin-bottom: 1rem; background: linear-gradient(120deg, rgba(99,102,241,.16), rgba(16,185,129,.12)); border: 1px solid rgba(99,102,241,.25); }
+  .hero h1 { margin: 0; font-size: calc(var(--base) * 1.9); line-height: 1.2; }
+  .hero p { margin: .3rem 0 0; color: var(--muted); }
+  .chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+  .chip { font-size: .8rem; padding: .15rem .65rem; border-radius: 999px; background: var(--gray-soft); border: 1px solid var(--line); }
+  .tabs { display: inline-flex; background: var(--gray-soft); border-radius: 12px; padding: 3px; margin-bottom: 1rem; }
+  .tab { border: 0; background: transparent; padding: .45rem 1rem; border-radius: 9px; cursor: pointer; }
+  .tab.active { background: var(--panel); box-shadow: 0 1px 3px rgba(0,0,0,.12); font-weight: 600; }
+
+  .toolbar-label { font-size: .85rem; color: var(--muted); margin-bottom: .35rem; }
+  .pills { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.2rem; }
+  .pill { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: .25rem .75rem; font-size: .88rem; cursor: pointer; }
+  .pill:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .pill:disabled { opacity: .5; cursor: not-allowed; }
+  .samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: .6rem; margin-bottom: 1.2rem; }
+  .sample { text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: .75rem .9rem; cursor: pointer; }
+  .sample:hover:not(:disabled) { border-color: var(--accent); }
+
+  .msg { display: flex; gap: .7rem; margin: 1rem 0; }
+  .avatar { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--gray-soft); }
+  .msg.user .avatar { background: var(--accent); color: var(--accent-ink); }
+  .bubble { min-width: 0; flex: 1; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: .7rem 1rem; }
+  .msg.user .bubble { background: var(--user); }
+  .bubble p:first-child { margin-top: 0; } .bubble p:last-child { margin-bottom: 0; }
+  .bubble a { color: var(--accent); }
+  .bubble pre, pre.json { background: var(--code); border-radius: 10px; padding: .7rem; overflow-x: auto; font-size: .8rem; line-height: 1.45; max-height: 340px; }
+  .bubble code { font-size: .88em; }
+  .meta { font-size: .8rem; color: var(--muted); margin-top: .5rem; }
+  .steps { margin-top: .5rem; font-size: .9rem; }
+  .steps summary { cursor: pointer; color: var(--muted); }
+  .step { border-top: 1px solid var(--line); padding: .5rem 0; }
+  .step-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+  .step-grid .cap { font-size: .75rem; color: var(--muted); }
+  .clarify { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .7rem; }
+  .thinking { display: flex; align-items: center; gap: .6rem; color: var(--muted); }
+  .spinner { width: 16px; height: 16px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .composer { position: fixed; bottom: 0; left: 300px; right: 0; padding: .8rem clamp(1rem, 3vw, 2.4rem) calc(.8rem + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg) 70%, transparent); }
+  .composer form { max-width: 1110px; display: flex; gap: .5rem; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: .4rem; box-shadow: 0 4px 18px rgba(0,0,0,.08); }
+  .composer textarea { flex: 1; border: 0; resize: none; background: transparent; padding: .45rem .6rem; max-height: 160px; outline: none; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .8rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: .9rem 1rem; display: flex; flex-direction: column; gap: .35rem; }
+  .card-head { display: flex; justify-content: space-between; gap: .5rem; align-items: flex-start; }
+  .card-title { font-weight: 650; }
+  .badge { flex: none; font-size: .72rem; padding: .1rem .5rem; border-radius: 999px; white-space: nowrap; }
+  .badge.ok { background: var(--ok-soft); color: var(--ok); } .badge.warn { background: var(--warn-soft); color: var(--warn); }
+  .badge.bad { background: var(--bad-soft); color: var(--bad); } .badge.gray { background: var(--gray-soft); color: var(--muted); }
+  .card .btn { margin-top: auto; }
+  .playground { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1rem; margin-top: .6rem; }
+  .result-head { padding: .55rem .8rem; border-radius: 10px; margin-bottom: .6rem; }
+  .result-head.ok { background: var(--ok-soft); color: var(--ok); } .result-head.bad { background: var(--bad-soft); color: var(--bad); }
+  .md-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: .7rem 1rem; margin-bottom: .6rem; }
+  .menu-btn { display: none; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: fixed; inset: 0 auto 0 0; width: min(320px, 88vw); z-index: 20; transform: translateX(-100%); transition: transform .2s; box-shadow: 0 0 30px rgba(0,0,0,.25); }
+    aside.open { transform: none; }
+    .composer { left: 0; }
+    .menu-btn { display: inline-block; margin-bottom: .8rem; }
+    .playground, .step-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="presentation">
+<div class="layout">
+  <aside id="sidebar">
+    <h2 class="side">⚙️ Cấu hình</h2>
+    <label class="field" for="provider">Provider</label>
+    <select id="provider" class="input"></select>
+    <label class="field" for="model">Model</label>
+    <input id="model" class="input" placeholder="mặc định">
+
+    <details class="box" id="keysBox">
+      <summary>🔑 API key của bạn</summary>
+      <p class="note">Key chỉ giữ trong tab trình duyệt này (sessionStorage), gửi kèm từng yêu cầu qua HTTPS, không lưu trên server, không ghi vào transcript. Không có key vẫn chạy thử được Wikipedia, Hacker News, GitHub, Hugging Face, arXiv ở trang Bộ công cụ.</p>
+      <div id="keyFields"></div>
+    </details>
+    <div id="providerStatus" class="status"></div>
+
+    <label class="toggle"><input type="checkbox" id="allowSend"> Cho phép gửi Telegram</label>
+    <label class="toggle"><input type="checkbox" id="presentation" checked> 🎤 Chế độ trình chiếu (chữ to)</label>
+    <hr>
+    <button class="btn primary block" id="newChat">🆕 Cuộc trò chuyện mới</button>
+    <button class="btn block" id="download">⬇️ Tải transcript (.json)</button>
+    <details class="box">
+      <summary>🛠 Thông tin kỹ thuật</summary>
+      <p class="note" id="techInfo"></p>
+    </details>
+  </aside>
+
+  <main>
+    <button class="btn menu-btn" id="menuBtn">☰ Cấu hình</button>
+    <section class="hero">
+      <h1>🔎 Research Agent</h1>
+      <p>Trợ lý nghiên cứu AI: tìm tin tức, tweet, paper, repo, model và soạn bản tin, có dẫn nguồn.</p>
+      <div class="chips" id="chips"></div>
+    </section>
+
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-view="chat" role="tab">💬 Trò chuyện</button>
+      <button class="tab" data-view="tools" role="tab">🧰 Bộ công cụ</button>
+    </div>
+
+    <section id="chatView">
+      <div class="toolbar-label">Công cụ của agent (bấm để thử)</div>
+      <div class="pills" id="toolbar"></div>
+      <div id="samplesWrap">
+        <h3>👋 Bắt đầu với một câu hỏi mẫu</h3>
+        <div class="samples" id="samples"></div>
+      </div>
+      <div id="messages"></div>
+    </section>
+
+    <section id="toolsView" hidden>
+      <h3 id="toolsTitle"></h3>
+      <div class="cards" id="cards"></div>
+      <hr>
+      <h3>🧪 Chạy thử từng công cụ (không qua AI)</h3>
+      <p class="note">Gọi thẳng công cụ mà không cần AI, để thấy từng công cụ tự hoạt động được.</p>
+      <div class="playground">
+        <div>
+          <label class="field" for="pgTool">Công cụ</label>
+          <select id="pgTool" class="input"></select>
+          <label class="field" for="pgArgs">Tham số (JSON)</label>
+          <textarea id="pgArgs" class="input" rows="10" spellcheck="false" style="font-family: ui-monospace, Menlo, monospace; font-size: .85rem"></textarea>
+          <p class="note" id="pgWarn" hidden>⚠️ Đặt <code>confirmed: true</code> sẽ gửi tin nhắn thật lên Telegram.</p>
+          <button class="btn primary block" id="pgRun">▶️ Chạy thử</button>
+        </div>
+        <div id="pgResult"><p class="note">Chọn một công cụ, chỉnh tham số nếu muốn, rồi bấm <b>Chạy thử</b>.</p></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="composer" id="composer">
+  <form id="chatForm">
+    <textarea id="chatInput" rows="1" placeholder="Hỏi agent bất cứ điều gì về AI…"></textarea>
+    <button class="btn primary" id="sendBtn" type="submit">Gửi</button>
+  </form>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k, d) { try { const v = sessionStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const md = (s) => (window.marked && window.DOMPurify) ? DOMPurify.sanitize(marked.parse(String(s ?? ""))) : `<p>${esc(s).replace(/\n/g, "<br>")}</p>`;
+const json = (v) => JSON.stringify(v, null, 2);
+const PROVIDER_KEYS = new Set(["GEMINI_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"]);
+
+const state = {
+  cfg: null,
+  keys: store.get("ra_keys", {}),
+  history: [],        // what the model sees
+  display: [],        // what the page shows
+  turns: [],          // transcript
+  playground: [],     // direct tool runs
+  busy: false,
+  view: "chat",
+  sessionId: new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 17),
+};
+
+// ---------- helpers ----------
+const toolByName = (n) => state.cfg.tools.find((t) => t.name === n) || { icon: "🔧", label: n, env: [] };
+const toolLabel = (n) => { const t = toolByName(n); return `${t.icon} ${t.label}`; };
+const hasKey = (env) => state.cfg.server_keys.includes(env) || !!(state.keys[env] || "").trim();
+const missing = (envs) => (envs || []).filter((e) => !hasKey(e));
+const provider = () => $("provider").value;
+const providerInfo = () => state.cfg.providers[provider()];
+const allowSend = () => $("allowSend").checked;
+const telegramReady = () => hasKey("TELEGRAM_BOT_TOKEN") && hasKey("TELEGRAM_CHAT_ID");
+const visibleTools = () => state.cfg.tools.filter((t) => allowSend() || t.name !== "send");
+function usage() {
+  const c = {};
+  for (const t of state.turns) for (const e of t.events || []) c[e.tool] = (c[e.tool] || 0) + 1;
+  for (const r of state.playground) c[r.tool] = (c[r.tool] || 0) + 1;
+  return c;
+}
+function shortArgs(args) {
+  return Object.entries(args || {}).map(([k, v]) => {
+    let t = typeof v === "string" ? `"${v}"` : JSON.stringify(v);
+    if (t.length > 40) t = t.slice(0, 40) + "…";
+    return `${k}=${t}`;
+  }).join(", ");
+}
+async function api(path, body) {
+  const res = await fetch(path, body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  let data = null;
+  try { data = await res.json(); } catch { throw new Error(`Máy chủ trả về lỗi ${res.status}${res.status === 504 ? " (quá thời gian, thử câu hỏi ngắn hơn)" : ""}`); }
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+// ---------- rendering ----------
+function renderSidebar() {
+  const info = providerInfo();
+  $("model").placeholder = `mặc định: ${info.default}`;
+  const box = $("keyFields");
+  box.innerHTML = "";
+  for (const f of state.cfg.key_fields) {
+    if (PROVIDER_KEYS.has(f.env) && !info.env.includes(f.env)) continue;
+    const id = `key_${f.env}`;
+    box.insertAdjacentHTML("beforeend",
+      `<label class="field" for="${id}">${esc(f.label)}</label>
+       <input class="input" id="${id}" type="password" autocomplete="off" placeholder="${state.cfg.server_keys.includes(f.env) ? "đã có trên server" : "dán key vào đây"}">`);
+    const input = $(id);
+    input.value = state.keys[f.env] || "";
+    input.disabled = state.busy;
+    input.addEventListener("input", () => { state.keys[f.env] = input.value.trim(); store.set("ra_keys", state.keys); renderStatus(); renderChips(); if (state.view === "tools") renderTools(); });
+  }
+  renderStatus();
+  $("allowSend").disabled = state.busy || !telegramReady();
+  if (!telegramReady()) $("allowSend").checked = false;
+  $("techInfo").innerHTML = `Artifact: <code>${esc(state.cfg.artifact_version)}</code><br>History window: ${state.cfg.history_window} · Max tool rounds: ${state.cfg.max_tool_rounds}<br>Phiên: <code>${state.sessionId}</code>`;
+  for (const id of ["provider", "model", "newChat"]) $(id).disabled = state.busy;
+  $("download").disabled = !state.turns.length;
+}
+function renderStatus() {
+  const info = providerInfo();
+  const lack = missing(info.env);
+  const el = $("providerStatus");
+  if (lack.length) {
+    el.className = "status warn";
+    el.innerHTML = `🔑 Cần <code>${lack.join("</code>, <code>")}</code> để chat. Nhập ở mục 🔑 phía trên.`;
+    $("keysBox").open = true;
+  } else {
+    el.className = "status ok";
+    el.innerHTML = `✅ ${esc(info.label)} sẵn sàng · <code>${esc($("model").value.trim() || info.default)}</code>`;
+  }
+}
+function renderChips() {
+  const info = providerInfo();
+  const tools = state.cfg.tools;
+  const ready = tools.filter((t) => t.implemented && !missing(t.env).length).length;
+  const calls = Object.values(usage()).reduce((a, b) => a + b, 0);
+  $("chips").innerHTML = [
+    `🤖 ${esc(info.label)} · ${esc($("model").value.trim() || info.default)}`,
+    `🧰 ${ready}/${tools.length} công cụ sẵn sàng`,
+    `💬 ${state.turns.length} lượt hỏi`,
+    `🔧 ${calls} lần dùng công cụ`,
+  ].map((c) => `<span class="chip">${c}</span>`).join("");
+}
+function renderToolbar() {
+  $("toolbar").innerHTML = "";
+  for (const t of visibleTools()) {
+    const b = document.createElement("button");
+    b.className = "pill"; b.textContent = `${t.icon} ${t.label}`; b.title = t.prompt; b.disabled = state.busy || !t.prompt;
+    b.onclick = () => send(t.prompt);
+    $("toolbar").appendChild(b);
+  }
+  $("samplesWrap").hidden = state.display.length > 0;
+  $("samples").innerHTML = "";
+  for (const s of state.cfg.samples) {
+    const b = document.createElement("button");
+    b.className = "sample"; b.textContent = `${s.icon}  ${s.text}`; b.disabled = state.busy;
+    b.onclick = () => send(s.text);
+    $("samples").appendChild(b);
+  }
+}
+function stepsHtml(events) {
+  if (!events || !events.length) return "";
+  const steps = events.map((e, i) => `
+    <div class="step"><b>${i + 1}. ${esc(e.label)}</b> · ${esc(e.summary)}
+      <div class="step-grid">
+        <div><div class="cap">Tham số</div><pre class="json">${esc(json(e.args))}</pre></div>
+        <div><div class="cap">Kết quả</div><pre class="json">${esc(json(e.result))}</pre></div>
+      </div></div>`).join("");
+  return `<details class="steps"><summary>🔧 Xem chi tiết ${events.length} bước dùng công cụ</summary>${steps}</details>`;
+}
+function renderMessages() {
+  const box = $("messages");
+  box.innerHTML = "";
+  state.display.forEach((m, i) => {
+    const el = document.createElement("div");
+    el.className = `msg ${m.role}`;
+    if (m.role === "user") {
+      el.innerHTML = `<div class="avatar">🙂</div><div class="bubble">${md(m.content)}</div>`;
+    } else if (m.pending) {
+      el.innerHTML = `<div class="avatar">🤖</div><div class="bubble"><div class="thinking"><div class="spinner"></div><span id="thinkingText">Agent đang suy nghĩ…</span></div></div>`;
+    } else {
+      const bits = (m.events || []).map((e) => e.label);
+      if (m.elapsed != null) bits.push(`⏱ ${m.elapsed.toFixed(1)}s`);
+      if (m.provider) bits.push(`🤖 ${m.provider}`);
+      el.innerHTML = `<div class="avatar">🤖</div><div class="bubble">${md(m.content)}
+        ${bits.length ? `<div class="meta">${esc(bits.join(" · "))}</div>` : ""}${stepsHtml(m.events)}<div class="clarify-slot"></div></div>`;
+      if (i === state.display.length - 1 && m.clarify) renderClarify(el.querySelector(".clarify-slot"), m.clarify);
+    }
+    box.appendChild(el);
+  });
+}
+function renderClarify(slot, clarify) {
+  let options = [...(clarify.options || [])];
+  if (!options.length && clarify.response_type === "yes_no") options = ["✅ Có, đồng ý", "❌ Không, huỷ"];
+  if (!options.length) return;
+  slot.innerHTML = `<div class="meta">Bấm để trả lời nhanh, hoặc tự gõ ở ô bên dưới:</div><div class="clarify"></div>`;
+  for (const o of options) {
+    const b = document.createElement("button");
+    b.className = "btn"; b.textContent = o; b.disabled = state.busy; b.onclick = () => send(o);
+    slot.querySelector(".clarify").appendChild(b);
+  }
+}
+function renderTools() {
+  const u = usage();
+  $("toolsTitle").innerHTML = `🧰 ${state.cfg.tools.length} công cụ agent đang dùng <span class="note">· agent tự chọn công cụ phù hợp với câu hỏi</span>`;
+  $("cards").innerHTML = "";
+  for (const t of state.cfg.tools) {
+    const lack = missing(t.env);
+    let badge = `<span class="badge ok">Sẵn sàng</span>`;
+    if (!t.implemented) badge = `<span class="badge bad">Chưa có code</span>`;
+    else if (lack.length) badge = `<span class="badge warn">Thiếu key</span>`;
+    else if (t.name === "send" && !allowSend()) badge = `<span class="badge gray">Đang tắt</span>`;
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-head"><div class="card-title">${esc(t.icon)} ${esc(t.label)}</div>${badge}</div>
+      <div class="note">Nguồn: <b>${esc(t.source)}</b> · ${esc(t.group)}</div>
+      <div>${esc(t.desc)}</div>
+      <div class="note">Đã dùng ${u[t.name] || 0} lần · mã tool: <code>${esc(t.name)}</code>${lack.length ? ` · cần <code>${lack.join("</code>, <code>")}</code>` : ""}</div>`;
+    if (t.prompt) {
+      const b = document.createElement("button");
+      b.className = "btn"; b.textContent = "💬 Hỏi agent"; b.title = t.prompt;
+      b.disabled = state.busy || (t.name === "send" && !allowSend());
+      b.onclick = () => { setView("chat"); send(t.prompt); };
+      card.appendChild(b);
+    }
+    $("cards").appendChild(card);
+  }
+  const sel = $("pgTool");
+  if (!sel.options.length) {
+    for (const t of state.cfg.tools.filter((x) => x.implemented)) sel.add(new Option(`${t.icon} ${t.label}`, t.name));
+    sel.onchange = () => { $("pgArgs").value = json(toolByName(sel.value).args || {}); $("pgWarn").hidden = sel.value !== "send"; };
+    sel.onchange();
+  }
+  $("pgRun").disabled = state.busy;
+}
+function renderAll() {
+  document.body.classList.toggle("presentation", $("presentation").checked);
+  renderSidebar(); renderChips(); renderToolbar(); renderMessages();
+  if (state.view === "tools") renderTools();
+  $("chatInput").disabled = state.busy; $("sendBtn").disabled = state.busy;
+  $("chatInput").placeholder = state.busy ? "Đang trả lời…" : "Hỏi agent bất cứ điều gì về AI…";
+}
+function setView(v) {
+  state.view = v;
+  document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.dataset.view === v));
+  $("chatView").hidden = v !== "chat"; $("toolsView").hidden = v !== "tools";
+  if (v === "tools") renderTools();
+}
+
+// ---------- actions ----------
+async function send(text) {
+  text = (text || "").trim();
+  if (!text || state.busy) return;
+  setView("chat");
+  state.busy = true;
+  state.display.push({ role: "user", content: text }, { role: "assistant", pending: true });
+  renderAll();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  const started = Date.now();
+  const hints = ["🧠 Đang phân tích câu hỏi…", "🔧 Đang chọn và gọi công cụ…", "📚 Đang đọc kết quả…", "✍️ Đang soạn câu trả lời…"];
+  const timer = setInterval(() => {
+    const s = Math.floor((Date.now() - started) / 1000);
+    const el = $("thinkingText"); if (el) el.textContent = `${hints[Math.min(Math.floor(s / 4), hints.length - 1)]} ${s}s`;
+  }, 500);
+  const body = { provider: provider(), model: $("model").value.trim(), message: text, history: state.history.slice(-state.cfg.history_window * 2), keys: state.keys, allow_send: allowSend() };
+  let res;
+  try {
+    res = await api("/api/chat", body);
+  } catch (err) {
+    res = { status: "network_error", answer: `⚠️ **Không gọi được agent:** ${err.message}`, events: [], clarify: null, elapsed: (Date.now() - started) / 1000, provider: provider() };
+  }
+  clearInterval(timer);
+  state.display.pop();
+  state.display.push({ role: "assistant", content: res.answer, events: res.events, clarify: res.clarify, elapsed: res.elapsed, provider: res.provider });
+  if (res.keep_in_history) state.history.push({ role: "user", content: text }, { role: "assistant", content: res.answer });
+  state.turns.push({ turn_index: state.turns.length + 1, at: new Date().toISOString(), provider: res.provider, model: res.model, user: text, status: res.status, assistant_text: res.answer, events: res.events });
+  state.busy = false;
+  renderAll();
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+async function runTool() {
+  const name = $("pgTool").value;
+  let args;
+  try { args = JSON.parse($("pgArgs").value || "{}"); if (typeof args !== "object" || Array.isArray(args) || args === null) throw new Error("Tham số phải là một object JSON."); }
+  catch (e) { $("pgResult").innerHTML = `<div class="result-head bad">JSON không hợp lệ: ${esc(e.message)}</div>`; return; }
+  $("pgRun").disabled = true;
+  $("pgResult").innerHTML = `<div class="thinking"><div class="spinner"></div>Đang chạy ${esc(toolLabel(name))}…</div>`;
+  try {
+    const r = await api("/api/run_tool", { tool: name, args, keys: state.keys });
+    state.playground.push(r);
+    const bad = r.summary.startsWith("lỗi");
+    const markdown = r.result && typeof r.result.markdown === "string" && r.result.markdown.trim() ? `<div class="md-card">${md(r.result.markdown)}</div>` : "";
+    $("pgResult").innerHTML = `<div class="result-head ${bad ? "bad" : "ok"}">${esc(r.label)} · ${esc(r.summary)} · ${r.took.toFixed(1)}s</div>${markdown}<pre class="json">${esc(json(r.result))}</pre>`;
+  } catch (e) {
+    $("pgResult").innerHTML = `<div class="result-head bad">Lỗi: ${esc(e.message)}</div>`;
+  }
+  renderChips(); renderTools();
+}
+function download() {
+  const data = { transcript_id: `vercel_${state.sessionId}`, source: "vercel_ui", artifact_version: state.cfg.artifact_version, created_at: state.turns[0]?.at, turns: state.turns };
+  const url = URL.createObjectURL(new Blob([json(data)], { type: "application/json" }));
+  const a = Object.assign(document.createElement("a"), { href: url, download: `vercel_ui_${state.sessionId}.transcript.json` });
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+// ---------- boot ----------
+async function boot() {
+  try { state.cfg = await api("/api/config"); }
+  catch (e) { $("messages").innerHTML = `<div class="status warn">Không tải được cấu hình agent: ${esc(e.message)}</div>`; return; }
+  for (const [name, p] of Object.entries(state.cfg.providers)) $("provider").add(new Option(p.label, name));
+  $("provider").value = store.get("ra_provider", "gemini");
+  if (!$("provider").value) $("provider").selectedIndex = 0;
+  $("model").value = store.get("ra_model", "");
+  $("provider").onchange = () => { store.set("ra_provider", provider()); renderAll(); };
+  $("model").oninput = () => { store.set("ra_model", $("model").value); renderStatus(); renderChips(); };
+  $("allowSend").onchange = renderAll;
+  $("presentation").onchange = renderAll;
+  $("newChat").onclick = () => { if (state.busy) return; Object.assign(state, { history: [], display: [], turns: [], playground: [], sessionId: new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 17) }); renderAll(); };
+  $("download").onclick = download;
+  $("menuBtn").onclick = () => $("sidebar").classList.toggle("open");
+  document.querySelectorAll(".tab").forEach((t) => t.onclick = () => setView(t.dataset.view));
+  $("pgRun").onclick = runTool;
+  const input = $("chatInput");
+  $("chatForm").onsubmit = (e) => { e.preventDefault(); const t = input.value; input.value = ""; input.style.height = ""; send(t); };
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $("chatForm").requestSubmit(); } });
+  input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 160) + "px"; });
+  renderAll();
+}
+boot();
+</script>
+</body>
+</html>

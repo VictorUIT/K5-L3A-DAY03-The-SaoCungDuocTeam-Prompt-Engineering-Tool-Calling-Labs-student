@@ -1,0 +1,10 @@
+# Only api/, public/, requirements.txt, vercel.json and the starter_v0 code are needed.
+**/.venv
+**/.env
+**/.env.*
+!**/.env.example
+**/__pycache__
+starter_v0/runs
+starter_v0/transcripts
+starter_v0/analysis
+starter_v0/arxiv_papers

@@ -1,0 +1,8 @@
+# Dependencies for the Vercel serverless functions in api/ (no Streamlit here).
+# Local dev / Streamlit UI uses starter_v0/requirements.txt instead.
+openai>=1.0.0
+anthropic>=0.34.0
+google-genai>=0.8.0
+requests>=2.31.0
+PyYAML>=6.0
+pypdf>=4.0.0
