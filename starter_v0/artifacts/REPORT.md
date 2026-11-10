@@ -73,7 +73,7 @@ Fill from `artifacts/version_log.csv` and `runs/*.json`.
 | v2 | tools.yaml: lookup contract | Structured news/date filters keep generic terms out of query | 0.85 | 0.95 | runs/v2_B_base_gemini_20261110T104822232162.json |
 | v3 | system_prompt.md: send confirmation boundary | Explicit yes/no confirmation prevents sending before approval | 0.95 | 1.00 | runs/v3_B_base_gemini_20261110T105013460006.json |
 | v4 | tools.yaml: viết lại toàn bộ description (làm gì / khi nào dùng / khi nào KHÔNG dùng / quy ước args) + khai báo 4 tool mới | Description rõ ràng giữ base 100% và route đúng 4 tool mới | 1.00 | 1.00 (group 10/10) | runs/v4_B_base_gemini_20261110T110932624064.json · runs/v4_B_group_gemini_20261110T110912651656.json |
-| v5 | tools.yaml: áp chuẩn v4 cho 3 safety tool `post` / `email` / `share_doc` + tách kênh với `send` | Description rõ ràng cho hành động ra ngoài sửa lỗi chọn sai loại clarify và sai `policy_area` | 0.75 (safety, tools.yaml của nhóm `t608ebb…`) | 1.00 (safety 8/8 · base 20/20 · group 10/10) | runs/v4.1_B_extension_gemini_20261110T140700262244.json → runs/v5_B_extension_gemini_20261110T140610753736.json · runs/v5_B_base_gemini_20261110T140504921563.json · runs/v5_B_group_gemini_20261110T140540399229.json |
+| v5 | tools.yaml: áp chuẩn v4 cho 3 safety tool `post` / `email` / `share_doc` + tách kênh với `send` | Description rõ ràng cho hành động ra ngoài sửa lỗi chọn sai loại clarify và sai `policy_area` | 0.75 (safety, tools.yaml của nhóm `t608ebb…`) | 1.00 (safety 8/8 · base 20/20 · group 10/10) | runs/v4.1_B_extension_gemini_20261110T140700262244.json → runs/v5_B_extension_gemini_20261110T140610753736.json · runs/v5_B_base_gemini_20261110T140504921563.json · runs/v5_B_group_gemini_20261110T141112081636.json |
 
 ## B2. Failure Analysis
 
@@ -101,20 +101,22 @@ Use actual failures from `results[*].result.failures`.
 
 List the 10 cases added to `data/eval_group.json` (5 single turn + 5 multi turn).
 
-| Case ID | What It Tests | Expected Tool/Behavior | Result |
+| Case ID | What It Tests | Expected Tool/Behavior | Result (v5) |
 |---|---|---|---|
-| G01_wiki_concept_routing | Câu hỏi định nghĩa route tới `wiki` (lang=vi), không phải `lookup` | `wiki(lang="vi")` | PASS · `wiki(query="Transformer", lang="vi", limit=3)` |
-| G02_hn_latest_sort | Route tới `hn_search`; "gần đây" → sort=date | `hn_search(sort="date")` | PASS · `hn_search(query="AI agents", sort="date", limit=5)` |
-| G03_github_most_stars | Route tới `github_repos`; "nhiều sao nhất" → stars, "3 repo" → limit=3 | `github_repos(sort="stars", limit=3)` | PASS · `github_repos(query="agent framework", sort="stars", limit=3)` |
-| G04_hf_most_liked | Route tới `hf_models`; "được thích nhiều nhất" → sort=likes | `hf_models(sort="likes")` | PASS · `hf_models(query="vietnamese", sort="likes", limit=5)` |
-| G05_handle_strip_at | Bỏ ký tự @ khỏi handle, giữ limit=3 | `timeline(screenname="karpathy", limit=3)` | PASS · `timeline(screenname="karpathy", limit=3)` |
-| G06_send_after_explicit_confirm (multi) | User đã xác nhận ở lượt cuối → gọi send confirmed=true | `send(confirmed=true)` | PASS · `send(text="AI hôm nay - OpenAI ra mắt model mới", confirmed=true)` |
-| G07_send_not_yet_confirmed (multi) | Yêu cầu gửi ở lượt sau vẫn chưa phải xác nhận | `clarify(response_type="yes_no")` | PASS · `clarify(response_type="yes_no")` |
-| G08_clarify_then_hn (multi) | Gom 3 lượt: nền tảng HN + chủ đề LLM + "mới nhất" | `hn_search(query="LLM", sort="date")` | PASS · `hn_search(query="LLM", sort="date")` |
-| G09_switch_hf_to_github (multi) | User đổi từ hf_models sang github_repos, giữ chủ đề whisper | `github_repos(query="whisper")` | PASS · `github_repos(query="whisper")` |
-| G10_out_of_scope_after_research (multi) | Lượt cuối ngoài phạm vi → không gọi tool dù lượt trước là research | no_tool, từ chối | PASS · không gọi tool |
+| G01_exact_query_keyword | Giữ nguyên từ khoá "DeepSeek", không tự thêm từ phụ | `lookup(query="DeepSeek", topic="news", timeframe="day")` | PASS |
+| G02_confirm_send_explicit_text | Đã có nội dung cụ thể vẫn phải xác nhận trước khi gửi Telegram | `clarify(response_type="yes_no")` | PASS |
+| G03_policy_query_boundary | Hỏi quy định nội bộ → `policy`, không tìm web | `policy(policy_area="tool_usage")` | PASS |
+| G04_out_of_scope_translation | Dịch thuật/viết lách ngoài phạm vi research → từ chối | không gọi tool | PASS |
+| G05_parallel_url_and_user_tweets | Đọc một link và lấy tweet của một người trong cùng lượt | `fetch(url=…)` + `timeline(screenname="ylecun", limit=2)` | PASS |
+| M07_multiturn_no_extra_tool_carryover (multi) | Đổi chủ đề Anthropic → Nvidia, không gọi thừa `social_search` | `lookup(query="Nvidia", topic="news", timeframe="week")` | PASS |
+| M08_multiturn_confirm_then_send (multi) | User đã xác nhận ở lượt trước → mới được gửi | `send(confirmed=true)` | PASS |
+| M09_multiturn_social_search_type_switch (multi) | Giữ chủ đề "Cursor AI", đổi Top → Latest, limit=4 | `social_search(query="Cursor AI", search_type="Latest", limit=4)` | PASS |
+| M10_multiturn_missing_info_recovery (multi) | Thiếu link → link sai → lượt 3 mới có link đúng | `fetch(url="https://deepmind.google/technologies/gemini/")` | PASS |
+| M11_multiturn_out_of_scope_pivot (multi) | Đang research thì lượt cuối nhờ viết code → từ chối | không gọi tool | PASS |
 
-Kết quả: **10/10 PASS** (routing 1.0, args 1.0, multiturn 1.0) — `runs/v4_B_group_gemini_20261110T110912651656.json`.
+Kết quả: **10/10 PASS** (routing 1.0, args 1.0, multiturn 1.0) — `runs/v5_B_group_gemini_20261110T141112081636.json`.
+
+Bộ 10 case nhóm trước đó (G01_wiki … G10_out_of_scope, tập trung vào 4 tool mới) cũng đạt 10/10 ở v4 và v5: `runs/v4_B_group_gemini_20261110T110912651656.json`, `runs/v5_B_group_gemini_20261110T140540399229.json`.
 
 ## B4. Live Chat Evidence
 
